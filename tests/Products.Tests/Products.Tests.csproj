@@ -18,4 +18,9 @@
     <Using Include="Xunit" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Products.API\Products.API.csproj" />
+    <ProjectReference Include="..\..\src\Shared.Contracts\Shared.Contracts.csproj" />
+  </ItemGroup>
+
 </Project>
