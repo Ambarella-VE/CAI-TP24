@@ -13,4 +13,13 @@ public class ErrorCatalogTests
         Assert.Equal(404, error.StatusCode);
         Assert.Equal("Producto no encontrado.", error.Message);
     }
+
+    [Fact]
+    public void Find_debe_devolver_error_de_regla_para_ORD_005()
+    {
+        var error = ErrorCatalog.Find("ORD-005");
+
+        Assert.Equal(422, error.StatusCode);
+        Assert.Equal(ErrorCategory.BusinessRule, error.Category);
+    }
 }
