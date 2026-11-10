@@ -1,8 +1,10 @@
 using Shared.Infrastructure.Correlation;
 using Shared.Infrastructure.Errors;
+using Shared.Infrastructure.Logging;
 using Users.API.Services;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.AddSharedSerilog();
 
 builder.Services.AddControllers();
 builder.Services.AddSingleton<UserService>();

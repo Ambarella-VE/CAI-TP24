@@ -38,5 +38,11 @@ public class UserService
         return ToResponse(user);
     }
 
+    public UserResponse GetById(Guid id)
+    {
+        var user = _users.FirstOrDefault(item => item.Id == id) ?? throw new DomainException("USR-003");
+        return ToResponse(user);
+    }
+
     private static UserResponse ToResponse(User user) => new(user.Id, user.FirstName, user.LastName, user.Email, user.RegisteredAt, user.Active);
 }

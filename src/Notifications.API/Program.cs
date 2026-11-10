@@ -1,8 +1,10 @@
 using Notifications.API.Services;
 using Shared.Infrastructure.Correlation;
 using Shared.Infrastructure.Errors;
+using Shared.Infrastructure.Logging;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.AddSharedSerilog();
 
 builder.Services.AddControllers();
 builder.Services.AddSingleton<NotificationService>();

@@ -16,4 +16,7 @@ public class UsersController : ControllerBase
 
     [HttpPost("login")]
     public ActionResult<UserResponse> Login(LoginRequest request) => Ok(_service.Login(request));
+
+    [HttpGet("{id:guid}")]
+    public ActionResult<UserResponse> GetById(Guid id) => Ok(_service.GetById(id));
 }

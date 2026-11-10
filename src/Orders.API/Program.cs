@@ -1,13 +1,17 @@
 using Orders.API.Clients;
 using Orders.API.Services;
+using Shared.Contracts.Configuration;
 using Shared.Infrastructure.Correlation;
 using Shared.Infrastructure.Errors;
+using Shared.Infrastructure.Logging;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.AddSharedSerilog();
 
 builder.Services.AddControllers();
-builder.Services.AddSingleton<IUsersClient, AvailableUsersClient>();
-builder.Services.AddSingleton<IProductsClient, EmptyProductsClient>();
+var serviceOptions = builder.Configuration.GetSection(ServiceOptions.SectionName).Get<ServiceOptions>() ?? new ServiceOptions();
+builder.Services.AddHttpClient<IUsersClient, UsersHttpClient>(client => client.BaseAddress = new Uri(serviceOptions.Users));
+builder.Services.AddHttpClient<IProductsClient, ProductsHttpClient>(client => client.BaseAddress = new Uri(serviceOptions.Products));
 builder.Services.AddSingleton<OrderService>();
 builder.Services.AddSwaggerGen();
 builder.Services.AddExceptionHandler<DomainExceptionHandler>();
