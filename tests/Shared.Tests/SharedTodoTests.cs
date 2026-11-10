@@ -1,4 +1,6 @@
 using Shared.Contracts.Errors;
+using Shared.Infrastructure.Errors;
+using Microsoft.AspNetCore.Http;
 
 namespace Shared.Tests;
 
@@ -42,5 +44,19 @@ public class ErrorCatalogTests
         Assert.Equal(401, problem.Status);
         Assert.Equal("USR-003", problem.ErrorCode);
         Assert.Equal("correlation-123", problem.CorrelationId);
+    }
+
+    [Fact]
+    public async Task DomainExceptionHandler_debe_devolver_el_status_del_catálogo()
+    {
+        var context = new DefaultHttpContext();
+        context.Response.Body = new MemoryStream();
+        context.Request.Headers["X-Correlation-Id"] = "corr-1";
+        var handler = new DomainExceptionHandler();
+
+        var handled = await handler.TryHandleAsync(context, new DomainException("PRD-001"), CancellationToken.None);
+
+        Assert.True(handled);
+        Assert.Equal(404, context.Response.StatusCode);
     }
 }
