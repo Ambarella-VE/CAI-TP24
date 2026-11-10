@@ -1,0 +1,22 @@
+consigna/
+docs/
+
+# Compilación .NET
+**/bin/
+**/obj/
+
+# Archivos de editor y usuario
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Logs y resultados locales
+logs/
+*.log
+TestResults/
+
+# Archivos del sistema
+.DS_Store
+Thumbs.db
