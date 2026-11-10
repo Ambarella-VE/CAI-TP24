@@ -1,1 +1,11 @@
-// TODO: [TP v7 §4.3, ORD-003] Validar usuario antes de crear una orden.
+namespace Orders.API.Clients;
+
+public interface IUsersClient
+{
+    bool Exists(Guid userId);
+}
+
+public class AvailableUsersClient : IUsersClient
+{
+    public bool Exists(Guid userId) => userId != Guid.Empty;
+}
