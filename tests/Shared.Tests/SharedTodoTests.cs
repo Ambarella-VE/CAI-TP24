@@ -33,4 +33,14 @@ public class ErrorCatalogTests
         Assert.Equal(ErrorCategory.Validation, exception.Category);
         Assert.Equal("Cantidad inválida.", exception.Message);
     }
+
+    [Fact]
+    public void ApiProblemDetails_debe_incluir_error_y_correlación()
+    {
+        var problem = new ApiProblemDetails(new DomainException("USR-003"), "correlation-123");
+
+        Assert.Equal(401, problem.Status);
+        Assert.Equal("USR-003", problem.ErrorCode);
+        Assert.Equal("correlation-123", problem.CorrelationId);
+    }
 }
