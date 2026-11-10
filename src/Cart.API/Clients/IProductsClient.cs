@@ -1,1 +1,4 @@
-// TODO: [TP v7 §4.4, CRT-002 y CRT-003] Consultar existencia y stock de Products.
+namespace Cart.API.Clients;
+public record ProductAvailability(Guid Id, int Stock);
+public interface IProductsClient { ProductAvailability? Get(Guid id); }
+public class EmptyProductsClient : IProductsClient { public ProductAvailability? Get(Guid id) => null; }
