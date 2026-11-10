@@ -1,4 +1,7 @@
 using Shared.Contracts.Errors;
+using Shared.Infrastructure.Errors;
+using Shared.Infrastructure.Correlation;
+using Microsoft.AspNetCore.Http;
 
 namespace Shared.Tests;
 
@@ -42,5 +45,31 @@ public class ErrorCatalogTests
         Assert.Equal(401, problem.Status);
         Assert.Equal("USR-003", problem.ErrorCode);
         Assert.Equal("correlation-123", problem.CorrelationId);
+    }
+
+    [Fact]
+    public async Task DomainExceptionHandler_debe_devolver_el_status_del_catálogo()
+    {
+        var context = new DefaultHttpContext();
+        context.Response.Body = new MemoryStream();
+        context.Request.Headers["X-Correlation-Id"] = "corr-1";
+        var handler = new DomainExceptionHandler();
+
+        var handled = await handler.TryHandleAsync(context, new DomainException("PRD-001"), CancellationToken.None);
+
+        Assert.True(handled);
+        Assert.Equal(404, context.Response.StatusCode);
+    }
+
+    [Fact]
+    public async Task CorrelationIdMiddleware_debe_crear_un_header_si_no_llega_en_el_request()
+    {
+        var context = new DefaultHttpContext();
+        var middleware = new CorrelationIdMiddleware(_ => Task.CompletedTask);
+
+        await middleware.InvokeAsync(context);
+
+        Assert.True(context.Response.Headers.ContainsKey("X-Correlation-Id"));
+        Assert.False(string.IsNullOrWhiteSpace(context.Response.Headers["X-Correlation-Id"]));
     }
 }
