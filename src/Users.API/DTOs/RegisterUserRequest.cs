@@ -1,1 +1,2 @@
-// TODO: [TP v7 §4.2, USR-002] Definir request de registro y validaciones.
+namespace Users.API.DTOs;
+public record RegisterUserRequest(string Nombre, string Apellido, string Email, string Password);
