@@ -1,1 +1,3 @@
-// TODO: [TP v7 §4.1] Definir el contrato público de respuesta de producto.
+namespace Products.API.DTOs;
+
+public record ProductResponse(Guid Id, string Nombre, string? Descripcion, decimal Precio, int Stock, string Categoria, DateTime FechaCreacion);
