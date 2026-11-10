@@ -1,3 +1,3 @@
 namespace Products.API.DTOs;
 
-public record ProductResponse(Guid Id, string Name, string? Description, decimal Price, int Stock, string Category, DateTime CreatedAt);
+public record ProductResponse(Guid Id, string Nombre, string? Descripcion, decimal Precio, int Stock, string Categoria, DateTime FechaCreacion);

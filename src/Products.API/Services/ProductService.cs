@@ -17,9 +17,9 @@ public class ProductService
 
     public ProductResponse Create(CreateProductRequest request)
     {
-        Validate(request.Name, request.Price, request.Stock, request.Category);
-        var name = Normalize(request.Name);
-        var category = Normalize(request.Category);
+        Validate(request.Nombre, request.Precio, request.Stock, request.Categoria);
+        var name = Normalize(request.Nombre);
+        var category = Normalize(request.Categoria);
 
         if (_products.Any(product => SameText(product.Name, name) && SameText(product.Category, category)))
         {
@@ -30,8 +30,8 @@ public class ProductService
         {
             Id = Guid.NewGuid(),
             Name = name,
-            Description = request.Description?.Trim(),
-            Price = request.Price,
+            Description = request.Descripcion?.Trim(),
+            Price = request.Precio,
             Stock = request.Stock,
             Category = category,
             CreatedAt = DateTime.UtcNow
@@ -65,10 +65,10 @@ public class ProductService
 
     public ProductResponse Update(Guid id, UpdateProductRequest request)
     {
-        Validate(request.Name, request.Price, request.Stock, request.Category);
+        Validate(request.Nombre, request.Precio, request.Stock, request.Categoria);
         var product = FindProduct(id);
-        var name = Normalize(request.Name);
-        var category = Normalize(request.Category);
+        var name = Normalize(request.Nombre);
+        var category = Normalize(request.Categoria);
 
         if (_products.Any(other => other.Id != id && SameText(other.Name, name) && SameText(other.Category, category)))
         {
@@ -76,8 +76,8 @@ public class ProductService
         }
 
         product.Name = name;
-        product.Description = request.Description?.Trim();
-        product.Price = request.Price;
+        product.Description = request.Descripcion?.Trim();
+        product.Price = request.Precio;
         product.Stock = request.Stock;
         product.Category = category;
         return ToResponse(product);
