@@ -1,1 +1,13 @@
-// TODO: [TP v7 §4.3, ORD-004 y ORD-005] Consultar producto, precio y stock.
+namespace Orders.API.Clients;
+
+public record ProductForOrder(Guid Id, decimal Price, int Stock);
+
+public interface IProductsClient
+{
+    ProductForOrder? Get(Guid productId);
+}
+
+public class EmptyProductsClient : IProductsClient
+{
+    public ProductForOrder? Get(Guid productId) => null;
+}
