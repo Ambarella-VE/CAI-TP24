@@ -20,6 +20,19 @@ public class CartServiceTests
         Assert.Equal(5, cart.Items.Single().Cantidad);
     }
 
+    [Fact]
+    public void UpdateItem_debe_reemplazar_la_cantidad()
+    {
+        var productId = Guid.NewGuid();
+        var service = new CartService(new AvailableProductsClient(productId, 10));
+        var userId = Guid.NewGuid();
+        service.AddItem(userId, new AddCartItemRequest(productId, 2));
+
+        var cart = service.UpdateItem(userId, productId, new UpdateCartItemRequest(7));
+
+        Assert.Equal(7, Assert.Single(cart.Items).Cantidad);
+    }
+
     private sealed class AvailableProductsClient(Guid productId, int stock) : IProductsClient
     {
         public ProductAvailability? Get(Guid id) => id == productId ? new ProductAvailability(id, stock) : null;
