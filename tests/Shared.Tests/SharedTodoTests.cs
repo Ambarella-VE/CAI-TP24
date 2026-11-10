@@ -1,5 +1,6 @@
 using Shared.Contracts.Errors;
 using Shared.Infrastructure.Errors;
+using Shared.Infrastructure.Correlation;
 using Microsoft.AspNetCore.Http;
 
 namespace Shared.Tests;
@@ -58,5 +59,17 @@ public class ErrorCatalogTests
 
         Assert.True(handled);
         Assert.Equal(404, context.Response.StatusCode);
+    }
+
+    [Fact]
+    public async Task CorrelationIdMiddleware_debe_crear_un_header_si_no_llega_en_el_request()
+    {
+        var context = new DefaultHttpContext();
+        var middleware = new CorrelationIdMiddleware(_ => Task.CompletedTask);
+
+        await middleware.InvokeAsync(context);
+
+        Assert.True(context.Response.Headers.ContainsKey("X-Correlation-Id"));
+        Assert.False(string.IsNullOrWhiteSpace(context.Response.Headers["X-Correlation-Id"]));
     }
 }
