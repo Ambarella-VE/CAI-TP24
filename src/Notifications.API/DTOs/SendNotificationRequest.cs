@@ -1,1 +1,11 @@
-// TODO: [TP v7 §4.5, NTF-001 y NTF-002] Definir request y validaciones.
+namespace Notifications.API.DTOs;
+
+public record SendNotificationRequest(Guid UsuarioId, string Mensaje, string Tipo);
+
+public record NotificationResponse(
+    Guid Id,
+    Guid UsuarioId,
+    string Mensaje,
+    string Tipo,
+    string Estado,
+    DateTime FechaEnvio);
