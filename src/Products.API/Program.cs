@@ -1,3 +1,5 @@
+using Products.API.Services;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // TODO: [TP v7 §5.1] Registrar Controllers, Swagger y ejemplos de Products.
@@ -7,6 +9,7 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 
 builder.Services.AddControllers();
+builder.Services.AddSingleton<ProductService>();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 

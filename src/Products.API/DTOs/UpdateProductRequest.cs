@@ -1,1 +1,3 @@
-// TODO: [TP v7 §4.1, PRD-002] Definir request de actualización y sus validaciones reutilizables.
+namespace Products.API.DTOs;
+
+public record UpdateProductRequest(string Name, string? Description, decimal Price, int Stock, string Category);

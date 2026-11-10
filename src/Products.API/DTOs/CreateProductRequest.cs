@@ -1,1 +1,3 @@
-// TODO: [TP v7 §4.1, PRD-002] Definir request de creación y sus validaciones reutilizables.
+namespace Products.API.DTOs;
+
+public record CreateProductRequest(string Name, string? Description, decimal Price, int Stock, string Category);
