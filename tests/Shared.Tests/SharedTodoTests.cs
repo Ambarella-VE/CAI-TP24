@@ -22,4 +22,15 @@ public class ErrorCatalogTests
         Assert.Equal(422, error.StatusCode);
         Assert.Equal(ErrorCategory.BusinessRule, error.Category);
     }
+
+    [Fact]
+    public void DomainException_debe_usar_los_metadatos_del_catálogo()
+    {
+        var exception = new DomainException("CRT-004");
+
+        Assert.Equal("CRT-004", exception.ErrorCode);
+        Assert.Equal(400, exception.StatusCode);
+        Assert.Equal(ErrorCategory.Validation, exception.Category);
+        Assert.Equal("Cantidad inválida.", exception.Message);
+    }
 }
