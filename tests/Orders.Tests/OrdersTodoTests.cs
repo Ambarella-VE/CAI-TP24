@@ -35,6 +35,21 @@ public class OrderServiceTests
         Assert.Equal("ORD-006", exception.ErrorCode);
     }
 
+    [Fact]
+    public void GetAll_debe_filtrar_por_usuario()
+    {
+        var productId = Guid.NewGuid();
+        var userId = Guid.NewGuid();
+        var service = new OrderService(new ExistingUser(), new ProductClient(productId, 10m, 5));
+        service.Create(new CreateOrderRequest(userId, [new CreateOrderItemRequest(productId, 1)]));
+        service.Create(new CreateOrderRequest(Guid.NewGuid(), [new CreateOrderItemRequest(productId, 1)]));
+
+        var orders = service.GetAll(userId);
+
+        Assert.Single(orders);
+        Assert.Equal(userId, orders.Single().UsuarioId);
+    }
+
     private class ExistingUser : IUsersClient { public bool Exists(Guid userId) => true; }
     private class ProductClient(Guid id, decimal price, int stock) : IProductsClient
     {

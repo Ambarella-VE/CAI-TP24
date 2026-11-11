@@ -1,10 +1,11 @@
 using Notifications.API.DTOs;
+using Notifications.API.Clients;
 using Notifications.API.Models;
 using Shared.Contracts.Errors;
 
 namespace Notifications.API.Services;
 
-public class NotificationService
+public class NotificationService(IUsersClient usersClient)
 {
     private readonly List<Notification> _notifications = [];
 
@@ -12,12 +13,17 @@ public class NotificationService
     {
         if (request.UsuarioId == Guid.Empty || string.IsNullOrWhiteSpace(request.Mensaje))
         {
-            throw new DomainException("NTF002");
+            throw new DomainException("NTF-002");
         }
 
         if (request.Tipo is not ("Email" or "Push" or "SMS"))
         {
-            throw new DomainException("NTF002");
+            throw new DomainException("NTF-002");
+        }
+
+        if (!usersClient.Exists(request.UsuarioId))
+        {
+            throw new DomainException("NTF-001");
         }
 
         var notification = new Notification

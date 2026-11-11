@@ -49,7 +49,14 @@ public class OrderService(IUsersClient usersClient, IProductsClient productsClie
 
     public OrderResponse GetById(Guid orderId) => ToResponse(FindOrder(orderId));
 
-    public IReadOnlyCollection<OrderResponse> GetAll() => _orders.Select(ToResponse).ToList();
+    public IReadOnlyCollection<OrderResponse> GetAll(Guid? userId = null)
+    {
+        var orders = userId.HasValue
+            ? _orders.Where(order => order.UserId == userId.Value)
+            : _orders;
+
+        return orders.Select(ToResponse).ToList();
+    }
 
     public OrderResponse UpdateStatus(Guid orderId, UpdateOrderStatusRequest request)
     {

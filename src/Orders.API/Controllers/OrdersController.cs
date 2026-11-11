@@ -9,7 +9,7 @@ namespace Orders.API.Controllers;
 public class OrdersController(OrderService orderService) : ControllerBase
 {
     [HttpGet]
-    public ActionResult<IReadOnlyCollection<OrderResponse>> GetAll() => Ok(orderService.GetAll());
+    public ActionResult<IReadOnlyCollection<OrderResponse>> GetAll([FromQuery] Guid? usuarioId) => Ok(orderService.GetAll(usuarioId));
 
     [HttpGet("{id:guid}")]
     public ActionResult<OrderResponse> GetById(Guid id) => Ok(orderService.GetById(id));
@@ -22,6 +22,6 @@ public class OrdersController(OrderService orderService) : ControllerBase
         return CreatedAtAction(nameof(GetById), new { id = order.Id }, order);
     }
 
-    [HttpPatch("{id:guid}/status")]
+    [HttpPut("{id:guid}/status")]
     public ActionResult<OrderResponse> UpdateStatus(Guid id, UpdateOrderStatusRequest request) => Ok(orderService.UpdateStatus(id, request));
 }
