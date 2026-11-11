@@ -1,29 +1,36 @@
+// [TP Microservicios E-Commerce v7] Implementa reglas de negocio de Products.API solicitadas por la consigna.
 using Products.API.Clients;
 using Products.API.DTOs;
 using Products.API.Models;
 using Shared.Contracts.Errors;
+using Shared.Infrastructure.Persistence;
 
 namespace Products.API.Services;
 
 public class ProductService
 {
-    private readonly List<Product> _products = [];
+    private readonly List<Product> _products;
     private readonly IOrdersClient _ordersClient;
+    private readonly IEntityStore<Product> _store;
 
-    public ProductService(IOrdersClient? ordersClient = null)
+    public ProductService(IOrdersClient ordersClient, IEntityStore<Product>? store = null)
     {
-        _ordersClient = ordersClient ?? new EmptyOrdersClient();
+        _ordersClient = ordersClient;
+        _store = store ?? new InMemoryEntityStore<Product>();
+        _products = _store.Load().ToList();
     }
 
     public ProductResponse Create(CreateProductRequest request)
     {
-        Validate(request.Nombre, request.Precio, request.Stock, request.Categoria);
+        // Se valida antes de normalizar para no guardar valores que contradigan el modelo del Apéndice A.
+        Validate(request.Nombre, request.Descripcion, request.Precio, request.Stock, request.Categoria);
         var name = Normalize(request.Nombre);
         var category = Normalize(request.Categoria);
 
         if (_products.Any(product => SameText(product.Name, name) && SameText(product.Category, category)))
         {
-            throw new DomainException("PRD-003");
+            // El nombre sólo es único dentro de una categoría, tal como define PRD-003.
+            throw DomainException.FromCode("PRD-003");
         }
 
         var product = new Product
@@ -37,7 +44,9 @@ public class ProductService
             CreatedAt = DateTime.UtcNow
         };
 
+        // La fecha se guarda en UTC para que la API no dependa de la zona horaria de quien la ejecute.
         _products.Add(product);
+        _store.Save(_products);
         return ToResponse(product);
     }
 
@@ -65,14 +74,14 @@ public class ProductService
 
     public ProductResponse Update(Guid id, UpdateProductRequest request)
     {
-        Validate(request.Nombre, request.Precio, request.Stock, request.Categoria);
+        Validate(request.Nombre, request.Descripcion, request.Precio, request.Stock, request.Categoria);
         var product = FindProduct(id);
         var name = Normalize(request.Nombre);
         var category = Normalize(request.Categoria);
 
         if (_products.Any(other => other.Id != id && SameText(other.Name, name) && SameText(other.Category, category)))
         {
-            throw new DomainException("PRD-003");
+            throw DomainException.FromCode("PRD-003");
         }
 
         product.Name = name;
@@ -80,6 +89,7 @@ public class ProductService
         product.Price = request.Precio;
         product.Stock = request.Stock;
         product.Category = category;
+        _store.Save(_products);
         return ToResponse(product);
     }
 
@@ -89,22 +99,27 @@ public class ProductService
 
         if (_ordersClient.HasActiveOrders(id))
         {
-            throw new DomainException("PRD-004");
+            // Un producto referido por una orden en curso no se elimina para preservar la consistencia del historial.
+            throw DomainException.FromCode("PRD-004");
         }
 
         _products.Remove(product);
+        _store.Save(_products);
     }
 
     private Product FindProduct(Guid id)
     {
-        return _products.FirstOrDefault(product => product.Id == id) ?? throw new DomainException("PRD-001");
+        // Centralizar la búsqueda evita que cada endpoint devuelva un error distinto para el mismo caso.
+        return _products.FirstOrDefault(product => product.Id == id) ?? throw DomainException.FromCode("PRD-001");
     }
 
-    private static void Validate(string name, decimal price, int stock, string category)
+    private static void Validate(string name, string? description, decimal price, int stock, string category)
     {
-        if (string.IsNullOrWhiteSpace(name) || string.IsNullOrWhiteSpace(category) || price <= 0 || stock < 0)
+        if (string.IsNullOrWhiteSpace(name) || name.Trim().Length > 100 ||
+            (description is not null && description.Trim().Length > 500) ||
+            string.IsNullOrWhiteSpace(category) || price <= 0 || stock < 0)
         {
-            throw new DomainException("PRD-002");
+            throw DomainException.FromCode("PRD-002");
         }
     }
 
@@ -114,8 +129,4 @@ public class ProductService
 
     private static ProductResponse ToResponse(Product product) => new(product.Id, product.Name, product.Description, product.Price, product.Stock, product.Category, product.CreatedAt);
 
-    private sealed class EmptyOrdersClient : IOrdersClient
-    {
-        public bool HasActiveOrders(Guid productId) => false;
-    }
 }

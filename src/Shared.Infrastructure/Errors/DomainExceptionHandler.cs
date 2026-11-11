@@ -1,6 +1,8 @@
+// [TP Microservicios E-Commerce v7] Agrupa infraestructura transversal reutilizable: errores, logs, persistencia y correlación.
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Http;
 using Shared.Contracts.Errors;
+using Serilog;
 
 namespace Shared.Infrastructure.Errors;
 
@@ -19,6 +21,8 @@ public class DomainExceptionHandler : IExceptionHandler
             Instance = context.Request.Path
         };
 
+        // Los errores previstos de reglas de negocio no son fallas de infraestructura: se registran como Warning.
+        Log.Warning("Error de negocio {ErrorCode} en {Endpoint}", domainException.ErrorCode, context.Request.Path);
         context.Response.StatusCode = domainException.StatusCode;
         await context.Response.WriteAsJsonAsync(problem, cancellationToken);
         return true;

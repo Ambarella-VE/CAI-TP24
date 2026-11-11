@@ -1,5 +1,6 @@
 consigna/
 docs/
+.superpowers/
 
 # Compilación .NET
 **/bin/
@@ -16,6 +17,7 @@ docs/
 logs/
 *.log
 TestResults/
+ecommerce.db
 
 # Archivos del sistema
 .DS_Store

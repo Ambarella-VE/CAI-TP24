@@ -1,14 +1,21 @@
+// [TP Microservicios E-Commerce v7] Expone los endpoints REST de Notifications.API y delega las reglas de la consigna al servicio correspondiente.
 using Microsoft.AspNetCore.Mvc;
 using Notifications.API.DTOs;
 using Notifications.API.Services;
+using Shared.Contracts.Errors;
 
 namespace Notifications.API.Controllers;
 
+/// <summary>Registra y consulta notificaciones simuladas para usuarios existentes.</summary>
 [ApiController]
 [Route("api/notifications")]
+[ProducesResponseType(typeof(ApiProblemDetails), StatusCodes.Status400BadRequest)]
+[ProducesResponseType(typeof(ApiProblemDetails), StatusCodes.Status404NotFound)]
+[ProducesResponseType(typeof(ApiProblemDetails), StatusCodes.Status500InternalServerError)]
 public class NotificationsController(NotificationService notificationService) : ControllerBase
 {
-    [HttpPost("send")]
+        /// <summary>Simula el envío de Email, Push o SMS y guarda el resultado.</summary>
+[HttpPost("send")]
     [ProducesResponseType(typeof(NotificationResponse), StatusCodes.Status201Created)]
     public ActionResult<NotificationResponse> Send(SendNotificationRequest request)
     {
@@ -16,7 +23,8 @@ public class NotificationsController(NotificationService notificationService) : 
         return StatusCode(StatusCodes.Status201Created, notification);
     }
 
-    [HttpGet("{usuarioId:guid}")]
+        /// <summary>Devuelve el historial de notificaciones de un usuario.</summary>
+[HttpGet("{usuarioId:guid}")]
     [ProducesResponseType(typeof(IReadOnlyCollection<NotificationResponse>), StatusCodes.Status200OK)]
     public ActionResult<IReadOnlyCollection<NotificationResponse>> GetByUser(Guid usuarioId)
     {

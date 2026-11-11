@@ -1,3 +1,4 @@
+// [TP Microservicios E-Commerce v7] Define la comunicación de Cart.API con otro microservicio sin compartir modelos internos.
 namespace Cart.API.Clients;
 public record ProductAvailability(Guid Id, int Stock);
 public interface IProductsClient { ProductAvailability? Get(Guid id); }

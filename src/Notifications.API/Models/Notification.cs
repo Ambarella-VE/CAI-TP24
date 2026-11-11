@@ -1,3 +1,4 @@
+// [TP Microservicios E-Commerce v7] Define el modelo interno de Notifications.API; no se comparte como contrato entre microservicios.
 namespace Notifications.API.Models;
 
 public class Notification

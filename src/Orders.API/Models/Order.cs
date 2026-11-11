@@ -1,3 +1,4 @@
+// [TP Microservicios E-Commerce v7] Define el modelo interno de Orders.API; no se comparte como contrato entre microservicios.
 namespace Orders.API.Models;
 
 public enum OrderStatus { Pending, Confirmed, Shipped, Delivered, Cancelled }
