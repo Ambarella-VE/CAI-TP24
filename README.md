@@ -6,7 +6,7 @@ Implementación didáctica en .NET 10 de cinco APIs independientes para un e-com
 ## Requisitos y ejecución
 
 - .NET SDK 10.
-- Visual Studio Code con **C# Dev Kit**, **Better Comments** y **TODO Tree**.
+- Visual Studio Code con **C# Dev Kit**.
 
 Restaurar, compilar y ejecutar pruebas:
 
