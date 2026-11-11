@@ -1,3 +1,4 @@
+using Serilog;
 // [TP Microservicios E-Commerce v7] Compone Cart.API: registra dependencias, pipeline HTTP, Swagger, errores, logs y health checks.
 using Cart.API.Clients;
 using Cart.API.Services;
@@ -11,12 +12,17 @@ var builder = WebApplication.CreateBuilder(args);
 builder.AddSharedSerilog();
 
 builder.Services.AddControllers();
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddTransient<CorrelationIdDelegatingHandler>();
 var serviceOptions = builder.Configuration.GetSection(ServiceOptions.SectionName).Get<ServiceOptions>() ?? new ServiceOptions();
-builder.Services.AddHttpClient<IProductsClient, ProductsHttpClient>(client => client.BaseAddress = new Uri(serviceOptions.Products));
+builder.Services.AddHttpClient<IProductsClient, ProductsHttpClient>(client => client.BaseAddress = new Uri(serviceOptions.Products)).AddHttpMessageHandler<CorrelationIdDelegatingHandler>();
 builder.Services.AddSingleton<CartService>();
-builder.Services.AddSwaggerGen(); builder.Services.AddExceptionHandler<DomainExceptionHandler>(); builder.Services.AddProblemDetails(); builder.Services.AddHealthChecks();
+builder.Services.AddSwaggerGen(); builder.Services.AddExceptionHandler<DomainExceptionHandler>();
+builder.Services.AddExceptionHandler<UnexpectedExceptionHandler>(); builder.Services.AddProblemDetails(); builder.Services.AddHealthChecks();
 
 var app = builder.Build();
+
+app.UseSerilogRequestLogging();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

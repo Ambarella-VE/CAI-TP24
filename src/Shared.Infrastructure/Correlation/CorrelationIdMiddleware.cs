@@ -1,5 +1,6 @@
 // [TP Microservicios E-Commerce v7] Agrupa infraestructura transversal reutilizable: errores, logs, persistencia y correlación.
 using Microsoft.AspNetCore.Http;
+using Serilog.Context;
 
 namespace Shared.Infrastructure.Correlation;
 
@@ -24,6 +25,11 @@ public class CorrelationIdMiddleware
         }
 
         context.Response.Headers[HeaderName] = correlationId;
-        await _next(context);
+
+        // El contexto de Serilog permite que cada log de la solicitud incluya el mismo identificador.
+        using (LogContext.PushProperty("CorrelationId", correlationId))
+        {
+            await _next(context);
+        }
     }
 }

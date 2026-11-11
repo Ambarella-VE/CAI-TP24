@@ -1,3 +1,4 @@
+using Serilog;
 // [TP Microservicios E-Commerce v7] Compone Products.API: registra dependencias, pipeline HTTP, Swagger, errores, logs y health checks.
 using Products.API.Services;
 using Shared.Infrastructure.Correlation;
@@ -13,10 +14,13 @@ builder.Services.AddControllers();
 builder.Services.AddSingleton<ProductService>();
 builder.Services.AddSwaggerGen();
 builder.Services.AddExceptionHandler<DomainExceptionHandler>();
+builder.Services.AddExceptionHandler<UnexpectedExceptionHandler>();
 builder.Services.AddProblemDetails();
 builder.Services.AddHealthChecks();
 
 var app = builder.Build();
+
+app.UseSerilogRequestLogging();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
