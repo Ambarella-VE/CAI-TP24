@@ -8,6 +8,7 @@ docs/
 
 # Archivos de editor y usuario
 .vs/
+.vscode/
 *.user
 *.suo
 *.userosscache
