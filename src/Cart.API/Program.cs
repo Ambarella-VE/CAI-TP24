@@ -17,7 +17,7 @@ builder.Services.AddTransient<CorrelationIdDelegatingHandler>();
 var serviceOptions = builder.Configuration.GetSection(ServiceOptions.SectionName).Get<ServiceOptions>() ?? new ServiceOptions();
 builder.Services.AddHttpClient<IProductsClient, ProductsHttpClient>(client => client.BaseAddress = new Uri(serviceOptions.Products)).AddHttpMessageHandler<CorrelationIdDelegatingHandler>();
 builder.Services.AddSingleton<CartService>();
-builder.Services.AddSwaggerGen(); builder.Services.AddExceptionHandler<DomainExceptionHandler>();
+builder.Services.AddSwaggerGen(options => { var xmlFile = $"{System.Reflection.Assembly.GetExecutingAssembly().GetName().Name}.xml"; options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFile)); }); builder.Services.AddExceptionHandler<DomainExceptionHandler>();
 builder.Services.AddExceptionHandler<UnexpectedExceptionHandler>(); builder.Services.AddProblemDetails(); builder.Services.AddHealthChecks();
 
 var app = builder.Build();

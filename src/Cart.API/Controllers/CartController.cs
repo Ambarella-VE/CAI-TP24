@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Cart.API.Controllers;
 [ApiController]
 [Route("api/cart")]
+/// <summary>Gestiona el carrito de un usuario y valida stock con Products.</summary>
 public class CartController(CartService service) : ControllerBase
 {
     [HttpGet("{userId:guid}")] public ActionResult<CartResponse> Get(Guid userId) => Ok(service.Get(userId));

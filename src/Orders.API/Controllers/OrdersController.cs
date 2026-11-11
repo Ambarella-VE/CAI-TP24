@@ -7,9 +7,11 @@ namespace Orders.API.Controllers;
 
 [ApiController]
 [Route("api/orders")]
+/// <summary>Gestiona compras, sus importes históricos y transiciones de estado.</summary>
 public class OrdersController(OrderService orderService) : ControllerBase
 {
     [HttpGet]
+    /// <summary>Lista órdenes; opcionalmente limita el resultado a un usuario.</summary>
     public ActionResult<IReadOnlyCollection<OrderResponse>> GetAll([FromQuery] Guid? usuarioId) => Ok(orderService.GetAll(usuarioId));
 
     [HttpGet("{id:guid}")]
@@ -19,6 +21,7 @@ public class OrdersController(OrderService orderService) : ControllerBase
     public ActionResult<bool> HasActiveOrders(Guid productId) => Ok(orderService.HasActiveOrders(productId));
 
     [HttpPost]
+    /// <summary>Crea una orden después de validar usuario, productos y stock.</summary>
     [ProducesResponseType(typeof(OrderResponse), StatusCodes.Status201Created)]
     public ActionResult<OrderResponse> Create(CreateOrderRequest request)
     {
@@ -27,5 +30,6 @@ public class OrdersController(OrderService orderService) : ControllerBase
     }
 
     [HttpPut("{id:guid}/status")]
+    /// <summary>Aplica una transición de estado permitida por la regla de negocio.</summary>
     public ActionResult<OrderResponse> UpdateStatus(Guid id, UpdateOrderStatusRequest request) => Ok(orderService.UpdateStatus(id, request));
 }
