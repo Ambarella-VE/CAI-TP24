@@ -5,13 +5,13 @@ using Notifications.API.Services;
 
 namespace Notifications.API.Controllers;
 
+/// <summary>Registra y consulta notificaciones simuladas para usuarios existentes.</summary>
 [ApiController]
 [Route("api/notifications")]
-/// <summary>Registra y consulta notificaciones simuladas para usuarios existentes.</summary>
 public class NotificationsController(NotificationService notificationService) : ControllerBase
 {
-    [HttpPost("send")]
-    /// <summary>Simula el envío de Email, Push o SMS y guarda el resultado.</summary>
+        /// <summary>Simula el envío de Email, Push o SMS y guarda el resultado.</summary>
+[HttpPost("send")]
     [ProducesResponseType(typeof(NotificationResponse), StatusCodes.Status201Created)]
     public ActionResult<NotificationResponse> Send(SendNotificationRequest request)
     {
@@ -19,8 +19,8 @@ public class NotificationsController(NotificationService notificationService) : 
         return StatusCode(StatusCodes.Status201Created, notification);
     }
 
-    [HttpGet("{usuarioId:guid}")]
-    /// <summary>Devuelve el historial de notificaciones de un usuario.</summary>
+        /// <summary>Devuelve el historial de notificaciones de un usuario.</summary>
+[HttpGet("{usuarioId:guid}")]
     [ProducesResponseType(typeof(IReadOnlyCollection<NotificationResponse>), StatusCodes.Status200OK)]
     public ActionResult<IReadOnlyCollection<NotificationResponse>> GetByUser(Guid usuarioId)
     {

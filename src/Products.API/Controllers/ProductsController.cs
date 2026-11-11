@@ -5,9 +5,9 @@ using Products.API.Services;
 
 namespace Products.API.Controllers;
 
+/// <summary>Administra el catálogo y el stock de productos del e-commerce.</summary>
 [ApiController]
 [Route("api/products")]
-/// <summary>Administra el catálogo y el stock de productos del e-commerce.</summary>
 public class ProductsController : ControllerBase
 {
     private readonly ProductService _service;
@@ -17,24 +17,24 @@ public class ProductsController : ControllerBase
         _service = service;
     }
 
-    [HttpGet]
-    /// <summary>Lista productos y permite filtrar por categoría o parte del nombre.</summary>
+        /// <summary>Lista productos y permite filtrar por categoría o parte del nombre.</summary>
+[HttpGet]
     [ProducesResponseType(typeof(IReadOnlyCollection<ProductResponse>), StatusCodes.Status200OK)]
     public ActionResult<IReadOnlyCollection<ProductResponse>> GetAll([FromQuery] string? categoria, [FromQuery] string? nombre)
     {
         return Ok(_service.GetAll(categoria, nombre));
     }
 
-    [HttpGet("{id:guid}")]
-    /// <summary>Obtiene un producto por su identificador.</summary>
+        /// <summary>Obtiene un producto por su identificador.</summary>
+[HttpGet("{id:guid}")]
     [ProducesResponseType(typeof(ProductResponse), StatusCodes.Status200OK)]
     public ActionResult<ProductResponse> GetById(Guid id)
     {
         return Ok(_service.GetById(id));
     }
 
-    [HttpPost]
-    /// <summary>Crea un producto con precio y stock válidos.</summary>
+        /// <summary>Crea un producto con precio y stock válidos.</summary>
+[HttpPost]
     [ProducesResponseType(typeof(ProductResponse), StatusCodes.Status201Created)]
     public ActionResult<ProductResponse> Create(CreateProductRequest request)
     {
@@ -42,15 +42,15 @@ public class ProductsController : ControllerBase
         return CreatedAtAction(nameof(GetById), new { id = product.Id }, product);
     }
 
-    [HttpPut("{id:guid}")]
-    /// <summary>Actualiza los datos editables de un producto existente.</summary>
+        /// <summary>Actualiza los datos editables de un producto existente.</summary>
+[HttpPut("{id:guid}")]
     public ActionResult<ProductResponse> Update(Guid id, UpdateProductRequest request)
     {
         return Ok(_service.Update(id, request));
     }
 
-    [HttpDelete("{id:guid}")]
-    /// <summary>Elimina un producto si no participa de órdenes activas.</summary>
+        /// <summary>Elimina un producto si no participa de órdenes activas.</summary>
+[HttpDelete("{id:guid}")]
     public IActionResult Delete(Guid id)
     {
         _service.Delete(id);
