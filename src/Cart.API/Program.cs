@@ -20,7 +20,7 @@ var serviceOptions = builder.Configuration.GetSection(ServiceOptions.SectionName
 builder.Services.AddHttpClient<IProductsClient, ProductsHttpClient>(client => client.BaseAddress = new Uri(serviceOptions.Products)).AddHttpMessageHandler<CorrelationIdDelegatingHandler>();
 builder.Services.AddSingleton<IEntityStore<CartModel>, SqliteEntityStore<CartModel>>();
 builder.Services.AddSingleton<CartService>();
-builder.Services.AddSwaggerGen(options => { var xmlFile = $"{System.Reflection.Assembly.GetExecutingAssembly().GetName().Name}.xml"; options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFile)); }); builder.Services.AddExceptionHandler<DomainExceptionHandler>();
+builder.Services.AddSwaggerGen(options => { var xmlFile = $"{System.Reflection.Assembly.GetExecutingAssembly().GetName().Name}.xml"; options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFile)); options.OperationFilter<Shared.Infrastructure.Documentation.SwaggerExamplesOperationFilter>(); }); builder.Services.AddExceptionHandler<DomainExceptionHandler>();
 builder.Services.AddExceptionHandler<UnexpectedExceptionHandler>(); builder.Services.AddProblemDetails(); builder.Services.AddHealthChecks();
 
 var app = builder.Build();

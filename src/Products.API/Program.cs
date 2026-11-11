@@ -21,7 +21,7 @@ var serviceOptions = builder.Configuration.GetSection(ServiceOptions.SectionName
 builder.Services.AddHttpClient<IOrdersClient, OrdersHttpClient>(client => client.BaseAddress = new Uri(serviceOptions.Orders)).AddHttpMessageHandler<CorrelationIdDelegatingHandler>();
 builder.Services.AddSingleton<IEntityStore<Product>, SqliteEntityStore<Product>>();
 builder.Services.AddSingleton<ProductService>();
-builder.Services.AddSwaggerGen(options => { var xmlFile = $"{System.Reflection.Assembly.GetExecutingAssembly().GetName().Name}.xml"; options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFile)); });
+builder.Services.AddSwaggerGen(options => { var xmlFile = $"{System.Reflection.Assembly.GetExecutingAssembly().GetName().Name}.xml"; options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFile)); options.OperationFilter<Shared.Infrastructure.Documentation.SwaggerExamplesOperationFilter>(); });
 builder.Services.AddExceptionHandler<DomainExceptionHandler>();
 builder.Services.AddExceptionHandler<UnexpectedExceptionHandler>();
 builder.Services.AddProblemDetails();

@@ -21,7 +21,7 @@ var serviceOptions = builder.Configuration.GetSection(ServiceOptions.SectionName
 builder.Services.AddHttpClient<IUsersClient, UsersHttpClient>(client => client.BaseAddress = new Uri(serviceOptions.Users)).AddHttpMessageHandler<CorrelationIdDelegatingHandler>();
 builder.Services.AddSingleton<IEntityStore<Notification>, SqliteEntityStore<Notification>>();
 builder.Services.AddSingleton<NotificationService>();
-builder.Services.AddSwaggerGen(options => { var xmlFile = $"{System.Reflection.Assembly.GetExecutingAssembly().GetName().Name}.xml"; options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFile)); });
+builder.Services.AddSwaggerGen(options => { var xmlFile = $"{System.Reflection.Assembly.GetExecutingAssembly().GetName().Name}.xml"; options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFile)); options.OperationFilter<Shared.Infrastructure.Documentation.SwaggerExamplesOperationFilter>(); });
 builder.Services.AddExceptionHandler<DomainExceptionHandler>();
 builder.Services.AddExceptionHandler<UnexpectedExceptionHandler>();
 builder.Services.AddProblemDetails();

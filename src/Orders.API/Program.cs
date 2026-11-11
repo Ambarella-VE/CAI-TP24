@@ -22,7 +22,7 @@ builder.Services.AddHttpClient<IUsersClient, UsersHttpClient>(client => client.B
 builder.Services.AddHttpClient<IProductsClient, ProductsHttpClient>(client => client.BaseAddress = new Uri(serviceOptions.Products)).AddHttpMessageHandler<CorrelationIdDelegatingHandler>();
 builder.Services.AddSingleton<IEntityStore<Order>, SqliteEntityStore<Order>>();
 builder.Services.AddSingleton<OrderService>();
-builder.Services.AddSwaggerGen(options => { var xmlFile = $"{System.Reflection.Assembly.GetExecutingAssembly().GetName().Name}.xml"; options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFile)); });
+builder.Services.AddSwaggerGen(options => { var xmlFile = $"{System.Reflection.Assembly.GetExecutingAssembly().GetName().Name}.xml"; options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFile)); options.OperationFilter<Shared.Infrastructure.Documentation.SwaggerExamplesOperationFilter>(); });
 builder.Services.AddExceptionHandler<DomainExceptionHandler>();
 builder.Services.AddExceptionHandler<UnexpectedExceptionHandler>();
 builder.Services.AddProblemDetails();

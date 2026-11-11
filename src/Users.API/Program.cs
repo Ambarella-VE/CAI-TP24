@@ -15,7 +15,7 @@ builder.AddSharedSerilog();
 builder.Services.AddControllers();
 builder.Services.AddSingleton<IEntityStore<User>, SqliteEntityStore<User>>();
 builder.Services.AddSingleton<UserService>();
-builder.Services.AddSwaggerGen(options => { var xmlFile = $"{System.Reflection.Assembly.GetExecutingAssembly().GetName().Name}.xml"; options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFile)); });
+builder.Services.AddSwaggerGen(options => { var xmlFile = $"{System.Reflection.Assembly.GetExecutingAssembly().GetName().Name}.xml"; options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFile)); options.OperationFilter<Shared.Infrastructure.Documentation.SwaggerExamplesOperationFilter>(); });
 builder.Services.AddExceptionHandler<DomainExceptionHandler>();
 builder.Services.AddExceptionHandler<UnexpectedExceptionHandler>();
 builder.Services.AddProblemDetails();
