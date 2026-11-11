@@ -1,3 +1,4 @@
+// [TP Microservicios E-Commerce v7] Configura o respalda una parte necesaria de Orders.Tests para cumplir la consigna.
 using Orders.API.Clients;
 using Orders.API.DTOs;
 using Orders.API.Services;
@@ -30,9 +31,24 @@ public class OrderServiceTests
         var service = new OrderService(new ExistingUser(), new ProductClient(productId, 10m, 2));
         var order = service.Create(new CreateOrderRequest(Guid.NewGuid(), [new CreateOrderItemRequest(productId, 1)]));
 
-        var exception = Assert.Throws<DomainException>(() => service.UpdateStatus(order.Id, new UpdateOrderStatusRequest("Shipped")));
+        var exception = Assert.ThrowsAny<DomainException>(() => service.UpdateStatus(order.Id, new UpdateOrderStatusRequest("Shipped")));
 
         Assert.Equal("ORD-006", exception.ErrorCode);
+    }
+
+    [Fact]
+    public void GetAll_debe_filtrar_por_usuario()
+    {
+        var productId = Guid.NewGuid();
+        var userId = Guid.NewGuid();
+        var service = new OrderService(new ExistingUser(), new ProductClient(productId, 10m, 5));
+        service.Create(new CreateOrderRequest(userId, [new CreateOrderItemRequest(productId, 1)]));
+        service.Create(new CreateOrderRequest(Guid.NewGuid(), [new CreateOrderItemRequest(productId, 1)]));
+
+        var orders = service.GetAll(userId);
+
+        Assert.Single(orders);
+        Assert.Equal(userId, orders.Single().UsuarioId);
     }
 
     private class ExistingUser : IUsersClient { public bool Exists(Guid userId) => true; }

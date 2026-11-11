@@ -1,3 +1,4 @@
+// [TP Microservicios E-Commerce v7] Configura los puertos locales de Cart.API para ejecutar y probar la API.
 {
   "$schema": "https://json.schemastore.org/launchsettings.json",
   "profiles": {

@@ -1,3 +1,4 @@
+// [TP Microservicios E-Commerce v7] Define el modelo interno de Users.API; no se comparte como contrato entre microservicios.
 namespace Users.API.Models;
 
 public enum BlockReason { None, FailedAttempts, Fraud }

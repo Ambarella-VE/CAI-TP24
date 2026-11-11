@@ -1,3 +1,4 @@
+// [TP Microservicios E-Commerce v7] Define el contrato JSON público de Orders.API para requests y responses.
 namespace Orders.API.DTOs;
 
 public record CreateOrderItemRequest(Guid ProductoId, int Cantidad);

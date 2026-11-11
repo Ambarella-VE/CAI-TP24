@@ -1,23 +1,42 @@
+// [TP Microservicios E-Commerce v7] Implementa reglas de negocio de Notifications.API solicitadas por la consigna.
 using Notifications.API.DTOs;
+using Notifications.API.Clients;
 using Notifications.API.Models;
 using Shared.Contracts.Errors;
+using Shared.Infrastructure.Persistence;
 
 namespace Notifications.API.Services;
 
 public class NotificationService
 {
-    private readonly List<Notification> _notifications = [];
+    private readonly IUsersClient _usersClient;
+    private readonly IEntityStore<Notification> _store;
+    private readonly List<Notification> _notifications;
+
+    public NotificationService(IUsersClient usersClient, IEntityStore<Notification>? store = null)
+    {
+        _usersClient = usersClient;
+        _store = store ?? new InMemoryEntityStore<Notification>();
+        _notifications = _store.Load().ToList();
+    }
 
     public NotificationResponse Send(SendNotificationRequest request)
     {
-        if (request.UsuarioId == Guid.Empty || string.IsNullOrWhiteSpace(request.Mensaje))
+        // Mensaje y tipo se validan localmente antes de consultar Users.
+        if (request.UsuarioId == Guid.Empty || string.IsNullOrWhiteSpace(request.Mensaje) || request.Mensaje.Trim().Length > 500)
         {
-            throw new DomainException("NTF002");
+            throw DomainException.FromCode("NTF-002");
         }
 
         if (request.Tipo is not ("Email" or "Push" or "SMS"))
         {
-            throw new DomainException("NTF002");
+            throw DomainException.FromCode("NTF-002");
+        }
+
+        if (!_usersClient.Exists(request.UsuarioId))
+        {
+            // Notifications no crea usuarios: sólo puede enviar a un destinatario que pertenece a Users.
+            throw DomainException.FromCode("NTF-001");
         }
 
         var notification = new Notification
@@ -29,7 +48,9 @@ public class NotificationService
             SentAt = DateTime.UtcNow
         };
 
+        // El envío es simulado, pero se persiste su resultado para poder consultar historial por usuario.
         _notifications.Add(notification);
+        _store.Save(_notifications);
         return ToResponse(notification);
     }
 
@@ -42,7 +63,7 @@ public class NotificationService
 
         if (notifications.Count == 0)
         {
-            throw new DomainException("NTF003");
+            throw DomainException.FromCode("NTF-003");
         }
 
         return notifications;

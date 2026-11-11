@@ -1,3 +1,4 @@
+// [TP Microservicios E-Commerce v7] Configura o respalda una parte necesaria de Cart.Tests para cumplir la consigna.
 using Cart.API.Clients;
 using Cart.API.DTOs;
 using Cart.API.Services;

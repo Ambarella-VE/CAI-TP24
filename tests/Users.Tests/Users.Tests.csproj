@@ -1,4 +1,5 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<!-- [TP Microservicios E-Commerce v7] Configura o respalda una parte necesaria de Users.Tests para cumplir la consigna. -->
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
