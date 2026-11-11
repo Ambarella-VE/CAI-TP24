@@ -19,7 +19,7 @@ public class NotificationServiceTests
     {
         var service = new NotificationService(new MissingUser());
 
-        var exception = Assert.Throws<DomainException>(() => service.Send(new SendNotificationRequest(Guid.NewGuid(), "Orden confirmada", "Email")));
+        var exception = Assert.ThrowsAny<DomainException>(() => service.Send(new SendNotificationRequest(Guid.NewGuid(), "Orden confirmada", "Email")));
 
         Assert.Equal("NTF-001", exception.ErrorCode);
     }
@@ -29,7 +29,7 @@ public class NotificationServiceTests
     {
         var service = new NotificationService(new ExistingUser());
 
-        var exception = Assert.Throws<DomainException>(() => service.Send(new SendNotificationRequest(Guid.NewGuid(), "Orden confirmada", "Carta")));
+        var exception = Assert.ThrowsAny<DomainException>(() => service.Send(new SendNotificationRequest(Guid.NewGuid(), "Orden confirmada", "Carta")));
 
         Assert.Equal("NTF-002", exception.ErrorCode);
     }
@@ -39,7 +39,7 @@ public class NotificationServiceTests
     {
         var service = new NotificationService(new ExistingUser());
 
-        var exception = Assert.Throws<DomainException>(() => service.Send(new SendNotificationRequest(Guid.NewGuid(), new string('a', 501), "Email")));
+        var exception = Assert.ThrowsAny<DomainException>(() => service.Send(new SendNotificationRequest(Guid.NewGuid(), new string('a', 501), "Email")));
 
         Assert.Equal("NTF-002", exception.ErrorCode);
     }

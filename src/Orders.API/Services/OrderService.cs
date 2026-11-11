@@ -27,23 +27,23 @@ public class OrderService
         // Una orden vacía o con cantidades no positivas no puede representar una compra válida.
         if (request.UsuarioId == Guid.Empty || request.Items.Count == 0 || request.Items.Any(item => item.Cantidad <= 0))
         {
-            throw new DomainException("ORD-002");
+            throw DomainException.FromCode("ORD-002");
         }
 
         if (!_usersClient.Exists(request.UsuarioId))
         {
-            throw new DomainException("ORD-003");
+            throw DomainException.FromCode("ORD-003");
         }
 
         var items = new List<OrderItem>();
         // Se consolidan productos repetidos antes de consultar stock, para validar la cantidad real pedida.
         foreach (var requestedItem in request.Items.GroupBy(item => item.ProductoId))
         {
-            var product = _productsClient.Get(requestedItem.Key) ?? throw new DomainException("ORD-004");
+            var product = _productsClient.Get(requestedItem.Key) ?? throw DomainException.FromCode("ORD-004");
             var quantity = requestedItem.Sum(item => item.Cantidad);
             if (product.Stock < quantity)
             {
-                throw new DomainException("ORD-005");
+                throw DomainException.FromCode("ORD-005");
             }
 
             // El precio queda congelado en la orden aunque Products cambie el catálogo después.
@@ -89,7 +89,7 @@ public class OrderService
             !OrderStateTransitionPolicy.CanChange(order.Status, nextStatus))
         {
             // La matriz de transiciones evita saltos inválidos y mantiene los estados terminales.
-            throw new DomainException("ORD-006");
+            throw DomainException.FromCode("ORD-006");
         }
 
         order.Status = nextStatus;
@@ -97,7 +97,7 @@ public class OrderService
         return ToResponse(order);
     }
 
-    private Order FindOrder(Guid orderId) => _orders.FirstOrDefault(order => order.Id == orderId) ?? throw new DomainException("ORD-001");
+    private Order FindOrder(Guid orderId) => _orders.FirstOrDefault(order => order.Id == orderId) ?? throw DomainException.FromCode("ORD-001");
 
     private static OrderResponse ToResponse(Order order) => new(
         order.Id,

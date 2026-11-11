@@ -13,13 +13,13 @@ public class CartService
     public CartResponse AddItem(Guid userId, AddCartItemRequest request)
     {
         // La cantidad se comprueba antes de consultar otro servicio para evitar una llamada HTTP innecesaria.
-        if (request.Cantidad <= 0) throw new DomainException("CRT-004");
-        var product = _products.Get(request.ProductoId) ?? throw new DomainException("CRT-002");
+        if (request.Cantidad <= 0) throw DomainException.FromCode("CRT-004");
+        var product = _products.Get(request.ProductoId) ?? throw DomainException.FromCode("CRT-002");
         var cart = _carts.FirstOrDefault(item => item.UserId == userId) ?? CreateCart(userId);
         var item = cart.Items.FirstOrDefault(existing => existing.ProductId == request.ProductoId);
         // Repetir el mismo producto incrementa su única línea en lugar de duplicar CartItem.
         var quantity = (item?.Quantity ?? 0) + request.Cantidad;
-        if (quantity > product.Stock) throw new DomainException("CRT-003");
+        if (quantity > product.Stock) throw DomainException.FromCode("CRT-003");
         if (item is null) cart.Items.Add(new CartItem { ProductId = request.ProductoId, Quantity = quantity }); else item.Quantity = quantity;
         cart.UpdatedAt = DateTime.UtcNow; _store.Save(_carts); return ToResponse(cart);
     }
@@ -27,11 +27,11 @@ public class CartService
     public CartResponse UpdateItem(Guid userId, Guid productId, UpdateCartItemRequest request)
     {
         // PUT reemplaza la cantidad total solicitada, a diferencia de POST que la acumula.
-        if (request.Cantidad <= 0) throw new DomainException("CRT-004");
-        var product = _products.Get(productId) ?? throw new DomainException("CRT-002");
-        if (request.Cantidad > product.Stock) throw new DomainException("CRT-003");
+        if (request.Cantidad <= 0) throw DomainException.FromCode("CRT-004");
+        var product = _products.Get(productId) ?? throw DomainException.FromCode("CRT-002");
+        if (request.Cantidad > product.Stock) throw DomainException.FromCode("CRT-003");
         var cart = Find(userId);
-        var item = cart.Items.FirstOrDefault(existing => existing.ProductId == productId) ?? throw new DomainException("CRT-002");
+        var item = cart.Items.FirstOrDefault(existing => existing.ProductId == productId) ?? throw DomainException.FromCode("CRT-002");
         item.Quantity = request.Cantidad;
         cart.UpdatedAt = DateTime.UtcNow;
         _store.Save(_carts);
@@ -40,7 +40,7 @@ public class CartService
     public void DeleteItem(Guid userId, Guid productId)
     {
         var cart = Find(userId);
-        var item = cart.Items.FirstOrDefault(existing => existing.ProductId == productId) ?? throw new DomainException("CRT-002");
+        var item = cart.Items.FirstOrDefault(existing => existing.ProductId == productId) ?? throw DomainException.FromCode("CRT-002");
         cart.Items.Remove(item);
         cart.UpdatedAt = DateTime.UtcNow;
         _store.Save(_carts);
@@ -54,6 +54,6 @@ public class CartService
         _store.Save(_carts);
     }
     private CartModel CreateCart(Guid userId) { var cart = new CartModel { UserId = userId, UpdatedAt = DateTime.UtcNow }; _carts.Add(cart); return cart; }
-    private CartModel Find(Guid userId) => _carts.FirstOrDefault(item => item.UserId == userId) ?? throw new DomainException("CRT-001");
+    private CartModel Find(Guid userId) => _carts.FirstOrDefault(item => item.UserId == userId) ?? throw DomainException.FromCode("CRT-001");
     private static CartResponse ToResponse(CartModel cart) => new(cart.UserId, cart.Items.Select(item => new CartItemResponse(item.ProductId, item.Quantity)).ToList(), cart.UpdatedAt);
 }

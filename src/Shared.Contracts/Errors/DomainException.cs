@@ -19,4 +19,22 @@ public class DomainException : Exception
         StatusCode = definition.StatusCode;
         Category = definition.Category;
     }
+
+    /// <summary>Selecciona la excepción concreta a partir de la categoría centralizada del código.</summary>
+    public static DomainException FromCode(string errorCode) => ErrorCatalog.Find(errorCode).Category switch
+    {
+        ErrorCategory.NotFound => new NotFoundException(errorCode),
+        ErrorCategory.Validation => new ValidationException(errorCode),
+        ErrorCategory.BusinessRule => new BusinessRuleException(errorCode),
+        _ => new DomainException(errorCode)
+    };
 }
+
+/// <summary>Representa recursos inexistentes y se traduce a una respuesta HTTP 404.</summary>
+public sealed class NotFoundException(string errorCode) : DomainException(errorCode);
+
+/// <summary>Representa datos de entrada inválidos y se traduce a una respuesta HTTP 400.</summary>
+public sealed class ValidationException(string errorCode) : DomainException(errorCode);
+
+/// <summary>Representa reglas de negocio incumplidas, como duplicados o falta de stock.</summary>
+public sealed class BusinessRuleException(string errorCode) : DomainException(errorCode);

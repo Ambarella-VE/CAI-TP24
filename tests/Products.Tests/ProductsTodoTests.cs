@@ -16,7 +16,7 @@ public class ProductServiceTests
 
         service.Create(request);
 
-        var exception = Assert.Throws<DomainException>(() => service.Create(request));
+        var exception = Assert.ThrowsAny<DomainException>(() => service.Create(request));
         Assert.Equal("PRD-003", exception.ErrorCode);
     }
 
@@ -39,7 +39,7 @@ public class ProductServiceTests
         var service = new ProductService(new OrdersClientWithActiveOrders());
         var product = service.Create(new CreateProductRequest("Notebook Dell", null, 1500, 10, "Electrónica"));
 
-        var exception = Assert.Throws<DomainException>(() => service.Delete(product.Id));
+        var exception = Assert.ThrowsAny<DomainException>(() => service.Delete(product.Id));
 
         Assert.Equal("PRD-004", exception.ErrorCode);
     }
@@ -49,7 +49,7 @@ public class ProductServiceTests
     {
         var service = new ProductService(new OrdersClientWithoutActiveOrders());
 
-        var exception = Assert.Throws<DomainException>(() => service.Create(new CreateProductRequest(new string('a', 101), null, 10m, 1, "Otros")));
+        var exception = Assert.ThrowsAny<DomainException>(() => service.Create(new CreateProductRequest(new string('a', 101), null, 10m, 1, "Otros")));
 
         Assert.Equal("PRD-002", exception.ErrorCode);
     }

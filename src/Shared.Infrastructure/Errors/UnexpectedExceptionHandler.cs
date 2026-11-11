@@ -21,7 +21,7 @@ public class UnexpectedExceptionHandler : IExceptionHandler
             _ => "ORD-007"
         };
         var correlationId = context.Request.Headers["X-Correlation-Id"].FirstOrDefault() ?? context.TraceIdentifier;
-        var problem = new ApiProblemDetails(new DomainException(errorCode), correlationId) { Instance = context.Request.Path };
+        var problem = new ApiProblemDetails(DomainException.FromCode(errorCode), correlationId) { Instance = context.Request.Path };
 
         // El detalle técnico queda en el log; la respuesta pública usa el mensaje seguro del catálogo.
         Log.Error(exception, "Error inesperado {ErrorCode} en {Endpoint}", errorCode, context.Request.Path);

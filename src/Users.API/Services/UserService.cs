@@ -26,10 +26,10 @@ public class UserService
         // La validación temprana devuelve el código de negocio en vez de filtrar un error técnico de persistencia.
         if (string.IsNullOrWhiteSpace(request.Nombre) || string.IsNullOrWhiteSpace(request.Apellido) || string.IsNullOrWhiteSpace(request.Email) || string.IsNullOrWhiteSpace(request.Password) ||
             !new EmailAddressAttribute().IsValid(request.Email.Trim()))
-            throw new DomainException("USR-002");
+            throw DomainException.FromCode("USR-002");
 
         var email = request.Email.Trim().ToLowerInvariant();
-        if (_users.Any(user => user.Email == email)) throw new DomainException("USR-001");
+        if (_users.Any(user => user.Email == email)) throw DomainException.FromCode("USR-001");
 
         var user = new User { Id = Guid.NewGuid(), FirstName = request.Nombre.Trim(), LastName = request.Apellido.Trim(), Email = email, RegisteredAt = DateTime.UtcNow };
         // Nunca se guarda ni se devuelve la contraseña original: sólo un hash verificable.
@@ -41,15 +41,15 @@ public class UserService
 
     public UserResponse Login(LoginRequest request)
     {
-        var user = _users.FirstOrDefault(item => item.Email == request.Email.Trim().ToLowerInvariant()) ?? throw new DomainException("USR-003");
-        if (!user.Active) throw new DomainException(user.BlockReason == BlockReason.Fraud ? "USR-005" : "USR-004");
+        var user = _users.FirstOrDefault(item => item.Email == request.Email.Trim().ToLowerInvariant()) ?? throw DomainException.FromCode("USR-003");
+        if (!user.Active) throw DomainException.FromCode(user.BlockReason == BlockReason.Fraud ? "USR-005" : "USR-004");
         if (_hasher.VerifyHashedPassword(user, user.PasswordHash, request.Password) == PasswordVerificationResult.Failed)
         {
             // Los intentos son consecutivos; un login correcto los reinicia más abajo.
             user.FailedAttempts++;
             if (user.FailedAttempts >= 3) { user.Active = false; user.BlockReason = BlockReason.FailedAttempts; }
             _store.Save(_users);
-            throw new DomainException(user.Active ? "USR-003" : "USR-004");
+            throw DomainException.FromCode(user.Active ? "USR-003" : "USR-004");
         }
         // Un acceso válido demuestra que no corresponde mantener un bloqueo por intentos anteriores.
         user.FailedAttempts = 0;
@@ -59,7 +59,7 @@ public class UserService
 
     public UserResponse GetById(Guid id)
     {
-        var user = _users.FirstOrDefault(item => item.Id == id) ?? throw new DomainException("USR-003");
+        var user = _users.FirstOrDefault(item => item.Id == id) ?? throw DomainException.FromCode("USR-003");
         return ToResponse(user);
     }
 

@@ -30,7 +30,7 @@ public class ProductService
         if (_products.Any(product => SameText(product.Name, name) && SameText(product.Category, category)))
         {
             // El nombre sólo es único dentro de una categoría, tal como define PRD-003.
-            throw new DomainException("PRD-003");
+            throw DomainException.FromCode("PRD-003");
         }
 
         var product = new Product
@@ -81,7 +81,7 @@ public class ProductService
 
         if (_products.Any(other => other.Id != id && SameText(other.Name, name) && SameText(other.Category, category)))
         {
-            throw new DomainException("PRD-003");
+            throw DomainException.FromCode("PRD-003");
         }
 
         product.Name = name;
@@ -100,7 +100,7 @@ public class ProductService
         if (_ordersClient.HasActiveOrders(id))
         {
             // Un producto referido por una orden en curso no se elimina para preservar la consistencia del historial.
-            throw new DomainException("PRD-004");
+            throw DomainException.FromCode("PRD-004");
         }
 
         _products.Remove(product);
@@ -110,7 +110,7 @@ public class ProductService
     private Product FindProduct(Guid id)
     {
         // Centralizar la búsqueda evita que cada endpoint devuelva un error distinto para el mismo caso.
-        return _products.FirstOrDefault(product => product.Id == id) ?? throw new DomainException("PRD-001");
+        return _products.FirstOrDefault(product => product.Id == id) ?? throw DomainException.FromCode("PRD-001");
     }
 
     private static void Validate(string name, string? description, decimal price, int stock, string category)
@@ -119,7 +119,7 @@ public class ProductService
             (description is not null && description.Trim().Length > 500) ||
             string.IsNullOrWhiteSpace(category) || price <= 0 || stock < 0)
         {
-            throw new DomainException("PRD-002");
+            throw DomainException.FromCode("PRD-002");
         }
     }
 

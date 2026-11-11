@@ -35,18 +35,19 @@ public class ErrorCatalogTests
     [Fact]
     public void DomainException_debe_usar_los_metadatos_del_catálogo()
     {
-        var exception = new DomainException("CRT-004");
+        var exception = DomainException.FromCode("CRT-004");
 
         Assert.Equal("CRT-004", exception.ErrorCode);
         Assert.Equal(400, exception.StatusCode);
         Assert.Equal(ErrorCategory.Validation, exception.Category);
         Assert.Equal("Cantidad inválida.", exception.Message);
+        Assert.IsType<ValidationException>(exception);
     }
 
     [Fact]
     public void ApiProblemDetails_debe_incluir_error_y_correlación()
     {
-        var problem = new ApiProblemDetails(new DomainException("USR-003"), "correlation-123");
+        var problem = new ApiProblemDetails(DomainException.FromCode("USR-003"), "correlation-123");
 
         Assert.Equal(401, problem.Status);
         Assert.Equal("USR-003", problem.ErrorCode);
@@ -61,7 +62,7 @@ public class ErrorCatalogTests
         context.Request.Headers["X-Correlation-Id"] = "corr-1";
         var handler = new DomainExceptionHandler();
 
-        var handled = await handler.TryHandleAsync(context, new DomainException("PRD-001"), CancellationToken.None);
+        var handled = await handler.TryHandleAsync(context, DomainException.FromCode("PRD-001"), CancellationToken.None);
 
         Assert.True(handled);
         Assert.Equal(404, context.Response.StatusCode);

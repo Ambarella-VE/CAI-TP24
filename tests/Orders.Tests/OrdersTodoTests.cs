@@ -31,7 +31,7 @@ public class OrderServiceTests
         var service = new OrderService(new ExistingUser(), new ProductClient(productId, 10m, 2));
         var order = service.Create(new CreateOrderRequest(Guid.NewGuid(), [new CreateOrderItemRequest(productId, 1)]));
 
-        var exception = Assert.Throws<DomainException>(() => service.UpdateStatus(order.Id, new UpdateOrderStatusRequest("Shipped")));
+        var exception = Assert.ThrowsAny<DomainException>(() => service.UpdateStatus(order.Id, new UpdateOrderStatusRequest("Shipped")));
 
         Assert.Equal("ORD-006", exception.ErrorCode);
     }

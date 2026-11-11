@@ -15,7 +15,7 @@ public class UserServiceTests
 
         service.Register(request);
 
-        var exception = Assert.Throws<DomainException>(() => service.Register(request));
+        var exception = Assert.ThrowsAny<DomainException>(() => service.Register(request));
         Assert.Equal("USR-001", exception.ErrorCode);
     }
 
@@ -24,7 +24,7 @@ public class UserServiceTests
     {
         var service = new UserService();
 
-        var exception = Assert.Throws<DomainException>(() => service.Register(new RegisterUserRequest("Ana", "Pérez", "correo-invalido", "Clave123")));
+        var exception = Assert.ThrowsAny<DomainException>(() => service.Register(new RegisterUserRequest("Ana", "Pérez", "correo-invalido", "Clave123")));
 
         Assert.Equal("USR-002", exception.ErrorCode);
     }

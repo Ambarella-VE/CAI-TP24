@@ -25,18 +25,18 @@ public class NotificationService
         // Mensaje y tipo se validan localmente antes de consultar Users.
         if (request.UsuarioId == Guid.Empty || string.IsNullOrWhiteSpace(request.Mensaje) || request.Mensaje.Trim().Length > 500)
         {
-            throw new DomainException("NTF-002");
+            throw DomainException.FromCode("NTF-002");
         }
 
         if (request.Tipo is not ("Email" or "Push" or "SMS"))
         {
-            throw new DomainException("NTF-002");
+            throw DomainException.FromCode("NTF-002");
         }
 
         if (!_usersClient.Exists(request.UsuarioId))
         {
             // Notifications no crea usuarios: sólo puede enviar a un destinatario que pertenece a Users.
-            throw new DomainException("NTF-001");
+            throw DomainException.FromCode("NTF-001");
         }
 
         var notification = new Notification
@@ -63,7 +63,7 @@ public class NotificationService
 
         if (notifications.Count == 0)
         {
-            throw new DomainException("NTF003");
+            throw DomainException.FromCode("NTF-003");
         }
 
         return notifications;
