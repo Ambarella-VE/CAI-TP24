@@ -1,3 +1,4 @@
+// [TP Microservicios E-Commerce v7] Compone Orders.API: registra dependencias, pipeline HTTP, Swagger, errores, logs y health checks.
 using Orders.API.Clients;
 using Orders.API.Services;
 using Shared.Contracts.Configuration;

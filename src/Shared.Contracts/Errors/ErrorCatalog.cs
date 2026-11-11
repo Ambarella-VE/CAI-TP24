@@ -1,3 +1,4 @@
+// [TP Microservicios E-Commerce v7] Centraliza contratos técnicos reutilizables para responder de forma consistente a la consigna.
 namespace Shared.Contracts.Errors;
 
 public enum ErrorCategory

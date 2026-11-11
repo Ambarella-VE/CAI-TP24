@@ -1,3 +1,4 @@
+// [TP Microservicios E-Commerce v7] Expone los endpoints REST de Users.API y delega las reglas de la consigna al servicio correspondiente.
 using Microsoft.AspNetCore.Mvc;
 using Users.API.DTOs;
 using Users.API.Services;

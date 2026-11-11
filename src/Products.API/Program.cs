@@ -1,3 +1,4 @@
+// [TP Microservicios E-Commerce v7] Compone Products.API: registra dependencias, pipeline HTTP, Swagger, errores, logs y health checks.
 using Products.API.Services;
 using Shared.Infrastructure.Correlation;
 using Shared.Infrastructure.Errors;

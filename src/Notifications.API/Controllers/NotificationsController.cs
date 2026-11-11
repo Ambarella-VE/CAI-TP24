@@ -1,3 +1,4 @@
+// [TP Microservicios E-Commerce v7] Expone los endpoints REST de Notifications.API y delega las reglas de la consigna al servicio correspondiente.
 using Microsoft.AspNetCore.Mvc;
 using Notifications.API.DTOs;
 using Notifications.API.Services;

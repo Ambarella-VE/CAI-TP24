@@ -1,3 +1,4 @@
+// [TP Microservicios E-Commerce v7] Compone Notifications.API: registra dependencias, pipeline HTTP, Swagger, errores, logs y health checks.
 using Notifications.API.Services;
 using Notifications.API.Clients;
 using Shared.Contracts.Configuration;

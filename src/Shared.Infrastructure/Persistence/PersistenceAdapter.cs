@@ -1,3 +1,4 @@
+// [TP Microservicios E-Commerce v7] Agrupa infraestructura transversal reutilizable: errores, logs, persistencia y correlación.
 namespace Shared.Infrastructure.Persistence;
 
 public interface IEntityStore<T>

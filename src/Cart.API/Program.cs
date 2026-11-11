@@ -1,3 +1,4 @@
+// [TP Microservicios E-Commerce v7] Compone Cart.API: registra dependencias, pipeline HTTP, Swagger, errores, logs y health checks.
 using Cart.API.Clients;
 using Cart.API.Services;
 using Shared.Contracts.Configuration;

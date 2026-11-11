@@ -1,5 +1,6 @@
 consigna/
 docs/
+.superpowers/
 
 # Compilación .NET
 **/bin/

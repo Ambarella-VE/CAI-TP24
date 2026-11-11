@@ -1,3 +1,4 @@
+// [TP Microservicios E-Commerce v7] Implementa reglas de negocio de Users.API solicitadas por la consigna.
 using Microsoft.AspNetCore.Identity;
 using Shared.Contracts.Errors;
 using Users.API.DTOs;

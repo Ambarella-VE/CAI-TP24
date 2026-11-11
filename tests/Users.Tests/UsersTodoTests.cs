@@ -1,3 +1,4 @@
+// [TP Microservicios E-Commerce v7] Configura o respalda una parte necesaria de Users.Tests para cumplir la consigna.
 using Shared.Contracts.Errors;
 using Users.API.DTOs;
 using Users.API.Services;

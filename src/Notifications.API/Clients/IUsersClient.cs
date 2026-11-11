@@ -1,3 +1,4 @@
+// [TP Microservicios E-Commerce v7] Define la comunicación de Notifications.API con otro microservicio sin compartir modelos internos.
 namespace Notifications.API.Clients;
 
 public interface IUsersClient

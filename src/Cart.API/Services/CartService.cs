@@ -1,3 +1,4 @@
+// [TP Microservicios E-Commerce v7] Implementa reglas de negocio de Cart.API solicitadas por la consigna.
 using Cart.API.Clients;
 using Cart.API.DTOs;
 using Cart.API.Models;

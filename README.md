@@ -1,3 +1,4 @@
+<!-- [TP Microservicios E-Commerce v7] Documento entregable: explica cómo ejecutar la solución y sus contratos principales. -->
 # TP Microservicios E-Commerce v7
 
 Implementación didáctica en .NET 10 de cinco APIs independientes para un e-commerce. El código prioriza clases chicas, nombres explícitos y reglas de negocio fáciles de seguir.

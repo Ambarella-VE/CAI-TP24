@@ -1,3 +1,4 @@
+<!-- [TP Microservicios E-Commerce v7] Configura o respalda una parte necesaria de Users.API para cumplir la consigna. -->
 <Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>

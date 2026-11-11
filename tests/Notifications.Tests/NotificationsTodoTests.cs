@@ -1,3 +1,4 @@
+// [TP Microservicios E-Commerce v7] Configura o respalda una parte necesaria de Notifications.Tests para cumplir la consigna.
 using Notifications.API.DTOs;
 using Notifications.API.Clients;
 using Notifications.API.Services;

@@ -1,3 +1,4 @@
+// [TP Microservicios E-Commerce v7] Agrupa infraestructura transversal reutilizable: errores, logs, persistencia y correlación.
 using Microsoft.AspNetCore.Http;
 
 namespace Shared.Infrastructure.Correlation;

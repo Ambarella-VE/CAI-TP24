@@ -1,3 +1,4 @@
+// [TP Microservicios E-Commerce v7] Expone los endpoints REST de Cart.API y delega las reglas de la consigna al servicio correspondiente.
 using Cart.API.DTOs;
 using Cart.API.Services;
 using Microsoft.AspNetCore.Mvc;

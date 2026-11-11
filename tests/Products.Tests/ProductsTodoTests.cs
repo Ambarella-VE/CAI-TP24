@@ -1,3 +1,4 @@
+// [TP Microservicios E-Commerce v7] Configura o respalda una parte necesaria de Products.Tests para cumplir la consigna.
 using Products.API.DTOs;
 using Products.API.Clients;
 using Products.API.Services;

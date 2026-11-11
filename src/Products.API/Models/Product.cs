@@ -1,3 +1,4 @@
+// [TP Microservicios E-Commerce v7] Define el modelo interno de Products.API; no se comparte como contrato entre microservicios.
 namespace Products.API.Models;
 
 public class Product

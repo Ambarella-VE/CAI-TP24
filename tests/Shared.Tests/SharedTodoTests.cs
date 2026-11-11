@@ -1,3 +1,4 @@
+// [TP Microservicios E-Commerce v7] Configura o respalda una parte necesaria de Shared.Tests para cumplir la consigna.
 using Shared.Contracts.Errors;
 using Shared.Infrastructure.Errors;
 using Shared.Infrastructure.Correlation;

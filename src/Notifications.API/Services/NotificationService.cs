@@ -1,3 +1,4 @@
+// [TP Microservicios E-Commerce v7] Implementa reglas de negocio de Notifications.API solicitadas por la consigna.
 using Notifications.API.DTOs;
 using Notifications.API.Clients;
 using Notifications.API.Models;

@@ -1,3 +1,4 @@
+// [TP Microservicios E-Commerce v7] Compone Users.API: registra dependencias, pipeline HTTP, Swagger, errores, logs y health checks.
 using Shared.Infrastructure.Correlation;
 using Shared.Infrastructure.Errors;
 using Shared.Infrastructure.Logging;

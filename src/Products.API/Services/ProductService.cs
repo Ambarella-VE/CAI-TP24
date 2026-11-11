@@ -1,3 +1,4 @@
+// [TP Microservicios E-Commerce v7] Implementa reglas de negocio de Products.API solicitadas por la consigna.
 using Products.API.Clients;
 using Products.API.DTOs;
 using Products.API.Models;
