@@ -24,6 +24,16 @@ dotnet run --project src/Products.API
 
 En modo Development, Swagger queda disponible en `/swagger`. Cada controlador declara sus respuestas exitosas y el contrato estándar de errores (`ApiProblemDetails`), por lo que los códigos y modelos se pueden inspeccionar sin leer el código.
 
+### Evidencia de Swagger y contrato de error
+
+La siguiente captura muestra los endpoints documentados de Products API en Swagger.
+
+![Swagger de Products API](assets/swagger/swagger-products.png)
+
+La siguiente respuesta real corresponde a `GET /api/products/{id}` con un identificador inexistente. Se observa el código `PRD-001`, el mensaje y el `correlationId` exigidos por la consigna.
+
+![Respuesta de error PRD-001](assets/swagger/error-prd-001.png)
+
 ## Microservicios y puertos
 
 | Servicio | HTTP | HTTPS | Responsabilidad |
