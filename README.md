@@ -22,7 +22,7 @@ Cada API se puede iniciar desde una segunda terminal. Por ejemplo:
 dotnet run --project src/Products.API
 ```
 
-En modo Development, Swagger queda disponible en `/swagger`.
+En modo Development, Swagger queda disponible en `/swagger`. Cada controlador declara sus respuestas exitosas y el contrato estándar de errores (`ApiProblemDetails`), por lo que los códigos y modelos se pueden inspeccionar sin leer el código.
 
 ## Microservicios y puertos
 
@@ -58,7 +58,15 @@ Los servicios no comparten entidades de dominio. `Shared.Contracts` contiene con
 | Cart | CRT-001 a CRT-005 |
 | Notifications | NTF-001 a NTF-004 |
 
-Los códigos se centralizan en `ErrorCatalog`. Una `DomainException` llega al `DomainExceptionHandler`, que responde `ProblemDetails` con `errorCode`, `errorMessage` y `correlationId`.
+Los códigos se centralizan en `ErrorCatalog`. Una `DomainException` llega al `DomainExceptionHandler`, que responde `ProblemDetails` con `errorCode`, `errorMessage` y `correlationId`. Por ejemplo, `GET /api/products/{id}` para un identificador inexistente responde `404`:
+
+```json
+{
+  "errorCode": "PRD-001",
+  "errorMessage": "Producto no encontrado.",
+  "correlationId": "..."
+}
+```
 
 ## Decisiones de diseño
 
@@ -70,6 +78,12 @@ Los códigos se centralizan en `ErrorCatalog`. Una `DomainException` llega al `D
 - Se usa `PasswordHasher<User>` de ASP.NET Core para no guardar contraseñas en texto plano.
 - Se agrega un `X-Correlation-Id` a solicitudes y respuestas, health checks y logs JSON con Serilog.
 
-## Alcance de esta entrega
+## Persistencia y comunicación
 
-La persistencia actual es en memoria mediante un adaptador intercambiable. Esto permite estudiar las reglas de negocio sin introducir una base de datos antes de contar con la librería de persistencia indicada por la cátedra. Los clientes de comunicación remota están representados por interfaces para poder probar las reglas sin levantar los cinco procesos; el siguiente paso es reemplazarlos por clientes HTTP tipados configurados desde `ServiceOptions`.
+Cada API persiste su propio estado en SQLite mediante `IEntityStore<T>` y `SqliteEntityStore<T>`. La abstracción mantiene los Services enfocados en reglas de negocio y permite a los tests usar `InMemoryEntityStore<T>`. El archivo `ecommerce.db` es local y está ignorado por Git.
+
+La comunicación entre APIs se realiza con clientes HTTP tipados configurados desde `ServiceOptions`: Orders consulta Users y Products; Cart consulta Products; Notifications consulta Users; Products consulta Orders antes de eliminar un producto. El `CorrelationIdDelegatingHandler` propaga `X-Correlation-Id` entre esas llamadas.
+
+## Validación de entrega
+
+La solución se verifica con `dotnet build ECommerce.slnx` y `dotnet test ECommerce.slnx`. La suite cubre reglas representativas de cada servicio, el contrato de error, correlación, health checks y la persistencia SQLite.
