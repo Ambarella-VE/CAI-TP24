@@ -11,10 +11,7 @@ public class ProductService
     private readonly List<Product> _products = [];
     private readonly IOrdersClient _ordersClient;
 
-    public ProductService(IOrdersClient? ordersClient = null)
-    {
-        _ordersClient = ordersClient ?? new EmptyOrdersClient();
-    }
+    public ProductService(IOrdersClient ordersClient) => _ordersClient = ordersClient;
 
     public ProductResponse Create(CreateProductRequest request)
     {
@@ -122,8 +119,4 @@ public class ProductService
 
     private static ProductResponse ToResponse(Product product) => new(product.Id, product.Name, product.Description, product.Price, product.Stock, product.Category, product.CreatedAt);
 
-    private sealed class EmptyOrdersClient : IOrdersClient
-    {
-        public bool HasActiveOrders(Guid productId) => false;
-    }
 }

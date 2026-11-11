@@ -15,6 +15,9 @@ public class OrdersController(OrderService orderService) : ControllerBase
     [HttpGet("{id:guid}")]
     public ActionResult<OrderResponse> GetById(Guid id) => Ok(orderService.GetById(id));
 
+    [HttpGet("active-by-product/{productId:guid}")]
+    public ActionResult<bool> HasActiveOrders(Guid productId) => Ok(orderService.HasActiveOrders(productId));
+
     [HttpPost]
     [ProducesResponseType(typeof(OrderResponse), StatusCodes.Status201Created)]
     public ActionResult<OrderResponse> Create(CreateOrderRequest request)

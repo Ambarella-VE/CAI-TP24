@@ -11,7 +11,7 @@ public class ProductServiceTests
     [Fact]
     public void Create_debe_rechazar_nombre_duplicado_en_la_misma_categoría()
     {
-        var service = new ProductService();
+        var service = new ProductService(new OrdersClientWithoutActiveOrders());
         var request = new CreateProductRequest("Notebook Dell", "Laptop", 1500, 10, "Electrónica");
 
         service.Create(request);
@@ -23,7 +23,7 @@ public class ProductServiceTests
     [Fact]
     public void GetAll_debe_combinar_filtros_sin_distinguir_mayúsculas()
     {
-        var service = new ProductService();
+        var service = new ProductService(new OrdersClientWithoutActiveOrders());
         service.Create(new CreateProductRequest("Notebook Dell", null, 1500, 10, "Electrónica"));
         service.Create(new CreateProductRequest("Notebook Asus", null, 1200, 5, "Electrónica"));
 
@@ -47,7 +47,7 @@ public class ProductServiceTests
     [Fact]
     public void Create_debe_rechazar_nombre_mayor_a_100_caracteres()
     {
-        var service = new ProductService();
+        var service = new ProductService(new OrdersClientWithoutActiveOrders());
 
         var exception = Assert.Throws<DomainException>(() => service.Create(new CreateProductRequest(new string('a', 101), null, 10m, 1, "Otros")));
 
@@ -57,5 +57,10 @@ public class ProductServiceTests
     private sealed class OrdersClientWithActiveOrders : IOrdersClient
     {
         public bool HasActiveOrders(Guid productId) => true;
+    }
+
+    private sealed class OrdersClientWithoutActiveOrders : IOrdersClient
+    {
+        public bool HasActiveOrders(Guid productId) => false;
     }
 }

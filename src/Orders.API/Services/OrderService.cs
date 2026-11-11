@@ -62,6 +62,13 @@ public class OrderService(IUsersClient usersClient, IProductsClient productsClie
         return orders.Select(ToResponse).ToList();
     }
 
+    public bool HasActiveOrders(Guid productId)
+    {
+        // Products sólo necesita saber si puede borrar: Pendiente y Confirmada todavía protegen el producto.
+        return _orders.Any(order => order.Items.Any(item => item.ProductId == productId) &&
+            order.Status is OrderStatus.Pending or OrderStatus.Confirmed);
+    }
+
     public OrderResponse UpdateStatus(Guid orderId, UpdateOrderStatusRequest request)
     {
         var order = FindOrder(orderId);
