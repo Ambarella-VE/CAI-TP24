@@ -1,5 +1,6 @@
 // [TP Microservicios E-Commerce v7] Implementa reglas de negocio de Users.API solicitadas por la consigna.
 using Microsoft.AspNetCore.Identity;
+using System.ComponentModel.DataAnnotations;
 using Shared.Contracts.Errors;
 using Users.API.DTOs;
 using Users.API.Models;
@@ -13,7 +14,8 @@ public class UserService
 
     public UserResponse Register(RegisterUserRequest request)
     {
-        if (string.IsNullOrWhiteSpace(request.Nombre) || string.IsNullOrWhiteSpace(request.Apellido) || string.IsNullOrWhiteSpace(request.Email) || string.IsNullOrWhiteSpace(request.Password))
+        if (string.IsNullOrWhiteSpace(request.Nombre) || string.IsNullOrWhiteSpace(request.Apellido) || string.IsNullOrWhiteSpace(request.Email) || string.IsNullOrWhiteSpace(request.Password) ||
+            !new EmailAddressAttribute().IsValid(request.Email.Trim()))
             throw new DomainException("USR-002");
 
         var email = request.Email.Trim().ToLowerInvariant();

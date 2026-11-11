@@ -18,7 +18,7 @@ public class ProductService
 
     public ProductResponse Create(CreateProductRequest request)
     {
-        Validate(request.Nombre, request.Precio, request.Stock, request.Categoria);
+        Validate(request.Nombre, request.Descripcion, request.Precio, request.Stock, request.Categoria);
         var name = Normalize(request.Nombre);
         var category = Normalize(request.Categoria);
 
@@ -66,7 +66,7 @@ public class ProductService
 
     public ProductResponse Update(Guid id, UpdateProductRequest request)
     {
-        Validate(request.Nombre, request.Precio, request.Stock, request.Categoria);
+        Validate(request.Nombre, request.Descripcion, request.Precio, request.Stock, request.Categoria);
         var product = FindProduct(id);
         var name = Normalize(request.Nombre);
         var category = Normalize(request.Categoria);
@@ -101,9 +101,11 @@ public class ProductService
         return _products.FirstOrDefault(product => product.Id == id) ?? throw new DomainException("PRD-001");
     }
 
-    private static void Validate(string name, decimal price, int stock, string category)
+    private static void Validate(string name, string? description, decimal price, int stock, string category)
     {
-        if (string.IsNullOrWhiteSpace(name) || string.IsNullOrWhiteSpace(category) || price <= 0 || stock < 0)
+        if (string.IsNullOrWhiteSpace(name) || name.Trim().Length > 100 ||
+            (description is not null && description.Trim().Length > 500) ||
+            string.IsNullOrWhiteSpace(category) || price <= 0 || stock < 0)
         {
             throw new DomainException("PRD-002");
         }

@@ -44,6 +44,16 @@ public class ProductServiceTests
         Assert.Equal("PRD-004", exception.ErrorCode);
     }
 
+    [Fact]
+    public void Create_debe_rechazar_nombre_mayor_a_100_caracteres()
+    {
+        var service = new ProductService();
+
+        var exception = Assert.Throws<DomainException>(() => service.Create(new CreateProductRequest(new string('a', 101), null, 10m, 1, "Otros")));
+
+        Assert.Equal("PRD-002", exception.ErrorCode);
+    }
+
     private sealed class OrdersClientWithActiveOrders : IOrdersClient
     {
         public bool HasActiveOrders(Guid productId) => true;

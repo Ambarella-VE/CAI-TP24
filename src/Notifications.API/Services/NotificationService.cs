@@ -12,7 +12,7 @@ public class NotificationService(IUsersClient usersClient)
 
     public NotificationResponse Send(SendNotificationRequest request)
     {
-        if (request.UsuarioId == Guid.Empty || string.IsNullOrWhiteSpace(request.Mensaje))
+        if (request.UsuarioId == Guid.Empty || string.IsNullOrWhiteSpace(request.Mensaje) || request.Mensaje.Trim().Length > 500)
         {
             throw new DomainException("NTF-002");
         }

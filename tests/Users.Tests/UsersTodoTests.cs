@@ -18,4 +18,14 @@ public class UserServiceTests
         var exception = Assert.Throws<DomainException>(() => service.Register(request));
         Assert.Equal("USR-001", exception.ErrorCode);
     }
+
+    [Fact]
+    public void Register_debe_rechazar_email_con_formato_invalido()
+    {
+        var service = new UserService();
+
+        var exception = Assert.Throws<DomainException>(() => service.Register(new RegisterUserRequest("Ana", "Pérez", "correo-invalido", "Clave123")));
+
+        Assert.Equal("USR-002", exception.ErrorCode);
+    }
 }

@@ -34,6 +34,16 @@ public class NotificationServiceTests
         Assert.Equal("NTF-002", exception.ErrorCode);
     }
 
+    [Fact]
+    public void Send_debe_devolver_NTF_002_para_mensaje_mayor_a_500_caracteres()
+    {
+        var service = new NotificationService(new ExistingUser());
+
+        var exception = Assert.Throws<DomainException>(() => service.Send(new SendNotificationRequest(Guid.NewGuid(), new string('a', 501), "Email")));
+
+        Assert.Equal("NTF-002", exception.ErrorCode);
+    }
+
     private sealed class ExistingUser : IUsersClient { public bool Exists(Guid userId) => true; }
     private sealed class MissingUser : IUsersClient { public bool Exists(Guid userId) => false; }
 }
