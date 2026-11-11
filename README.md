@@ -72,12 +72,3 @@ Los códigos se centralizan en `ErrorCatalog`. Una `DomainException` llega al `D
 ## Alcance de esta entrega
 
 La persistencia actual es en memoria mediante un adaptador intercambiable. Esto permite estudiar las reglas de negocio sin introducir una base de datos antes de contar con la librería de persistencia indicada por la cátedra. Los clientes de comunicación remota están representados por interfaces para poder probar las reglas sin levantar los cinco procesos; el siguiente paso es reemplazarlos por clientes HTTP tipados configurados desde `ServiceOptions`.
-
-## Guion breve para la demo
-
-1. Mostrar el diagrama y levantar Products, Users, Cart, Orders y Notifications.
-2. Registrar un usuario y crear productos desde Swagger.
-3. Agregar un producto al carrito, modificar la cantidad y mostrar el control de stock.
-4. Crear una orden con ítems repetidos y explicar cómo se consolidan y calculan el total.
-5. Intentar una transición de estado inválida y observar `ORD-006` junto al `correlationId`.
-6. Enviar una notificación simulada y consultar su historial.
