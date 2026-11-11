@@ -1,7 +1,0 @@
-# [TP Microservicios E-Commerce v7] Configura o respalda una parte necesaria de Cart.API para cumplir la consigna.
-@Cart.API_HostAddress = http://localhost:5270
-
-GET {{Cart.API_HostAddress}}/weatherforecast/
-Accept: application/json
-
-###
