@@ -11,10 +11,12 @@ public class CartService
     public CartService(IProductsClient products) => _products = products;
     public CartResponse AddItem(Guid userId, AddCartItemRequest request)
     {
+        // La cantidad se comprueba antes de consultar otro servicio para evitar una llamada HTTP innecesaria.
         if (request.Cantidad <= 0) throw new DomainException("CRT-004");
         var product = _products.Get(request.ProductoId) ?? throw new DomainException("CRT-002");
         var cart = _carts.FirstOrDefault(item => item.UserId == userId) ?? CreateCart(userId);
         var item = cart.Items.FirstOrDefault(existing => existing.ProductId == request.ProductoId);
+        // Repetir el mismo producto incrementa su única línea en lugar de duplicar CartItem.
         var quantity = (item?.Quantity ?? 0) + request.Cantidad;
         if (quantity > product.Stock) throw new DomainException("CRT-003");
         if (item is null) cart.Items.Add(new CartItem { ProductId = request.ProductoId, Quantity = quantity }); else item.Quantity = quantity;
@@ -23,6 +25,7 @@ public class CartService
     public CartResponse Get(Guid userId) => ToResponse(Find(userId));
     public CartResponse UpdateItem(Guid userId, Guid productId, UpdateCartItemRequest request)
     {
+        // PUT reemplaza la cantidad total solicitada, a diferencia de POST que la acumula.
         if (request.Cantidad <= 0) throw new DomainException("CRT-004");
         var product = _products.Get(productId) ?? throw new DomainException("CRT-002");
         if (request.Cantidad > product.Stock) throw new DomainException("CRT-003");
@@ -41,6 +44,7 @@ public class CartService
     }
     public void Clear(Guid userId)
     {
+        // Se conserva el carrito vacío para que su propietario pueda volver a usarlo sin recrear el recurso.
         var cart = Find(userId);
         cart.Items.Clear();
         cart.UpdatedAt = DateTime.UtcNow;

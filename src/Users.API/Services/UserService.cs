@@ -14,6 +14,7 @@ public class UserService
 
     public UserResponse Register(RegisterUserRequest request)
     {
+        // La validación temprana devuelve el código de negocio en vez de filtrar un error técnico de persistencia.
         if (string.IsNullOrWhiteSpace(request.Nombre) || string.IsNullOrWhiteSpace(request.Apellido) || string.IsNullOrWhiteSpace(request.Email) || string.IsNullOrWhiteSpace(request.Password) ||
             !new EmailAddressAttribute().IsValid(request.Email.Trim()))
             throw new DomainException("USR-002");
@@ -22,6 +23,7 @@ public class UserService
         if (_users.Any(user => user.Email == email)) throw new DomainException("USR-001");
 
         var user = new User { Id = Guid.NewGuid(), FirstName = request.Nombre.Trim(), LastName = request.Apellido.Trim(), Email = email, RegisteredAt = DateTime.UtcNow };
+        // Nunca se guarda ni se devuelve la contraseña original: sólo un hash verificable.
         user.PasswordHash = _hasher.HashPassword(user, request.Password);
         _users.Add(user);
         return ToResponse(user);
@@ -33,10 +35,12 @@ public class UserService
         if (!user.Active) throw new DomainException(user.BlockReason == BlockReason.Fraud ? "USR-005" : "USR-004");
         if (_hasher.VerifyHashedPassword(user, user.PasswordHash, request.Password) == PasswordVerificationResult.Failed)
         {
+            // Los intentos son consecutivos; un login correcto los reinicia más abajo.
             user.FailedAttempts++;
             if (user.FailedAttempts >= 3) { user.Active = false; user.BlockReason = BlockReason.FailedAttempts; }
             throw new DomainException(user.Active ? "USR-003" : "USR-004");
         }
+        // Un acceso válido demuestra que no corresponde mantener un bloqueo por intentos anteriores.
         user.FailedAttempts = 0;
         return ToResponse(user);
     }

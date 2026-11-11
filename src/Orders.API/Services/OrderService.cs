@@ -12,6 +12,7 @@ public class OrderService(IUsersClient usersClient, IProductsClient productsClie
 
     public OrderResponse Create(CreateOrderRequest request)
     {
+        // Una orden vacía o con cantidades no positivas no puede representar una compra válida.
         if (request.UsuarioId == Guid.Empty || request.Items.Count == 0 || request.Items.Any(item => item.Cantidad <= 0))
         {
             throw new DomainException("ORD-002");
@@ -23,6 +24,7 @@ public class OrderService(IUsersClient usersClient, IProductsClient productsClie
         }
 
         var items = new List<OrderItem>();
+        // Se consolidan productos repetidos antes de consultar stock, para validar la cantidad real pedida.
         foreach (var requestedItem in request.Items.GroupBy(item => item.ProductoId))
         {
             var product = productsClient.Get(requestedItem.Key) ?? throw new DomainException("ORD-004");
@@ -32,6 +34,7 @@ public class OrderService(IUsersClient usersClient, IProductsClient productsClie
                 throw new DomainException("ORD-005");
             }
 
+            // El precio queda congelado en la orden aunque Products cambie el catálogo después.
             items.Add(new OrderItem { ProductId = product.Id, Quantity = quantity, UnitPrice = product.Price });
         }
 
@@ -65,6 +68,7 @@ public class OrderService(IUsersClient usersClient, IProductsClient productsClie
         if (!Enum.TryParse<OrderStatus>(request.Estado, true, out var nextStatus) ||
             !OrderStateTransitionPolicy.CanChange(order.Status, nextStatus))
         {
+            // La matriz de transiciones evita saltos inválidos y mantiene los estados terminales.
             throw new DomainException("ORD-006");
         }
 

@@ -12,6 +12,7 @@ public class NotificationService(IUsersClient usersClient)
 
     public NotificationResponse Send(SendNotificationRequest request)
     {
+        // Mensaje y tipo se validan localmente antes de consultar Users.
         if (request.UsuarioId == Guid.Empty || string.IsNullOrWhiteSpace(request.Mensaje) || request.Mensaje.Trim().Length > 500)
         {
             throw new DomainException("NTF-002");
@@ -24,6 +25,7 @@ public class NotificationService(IUsersClient usersClient)
 
         if (!usersClient.Exists(request.UsuarioId))
         {
+            // Notifications no crea usuarios: sólo puede enviar a un destinatario que pertenece a Users.
             throw new DomainException("NTF-001");
         }
 
@@ -36,6 +38,7 @@ public class NotificationService(IUsersClient usersClient)
             SentAt = DateTime.UtcNow
         };
 
+        // El envío es simulado, pero se persiste su resultado para poder consultar historial por usuario.
         _notifications.Add(notification);
         return ToResponse(notification);
     }

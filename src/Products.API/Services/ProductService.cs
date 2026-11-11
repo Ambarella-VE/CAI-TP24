@@ -18,12 +18,14 @@ public class ProductService
 
     public ProductResponse Create(CreateProductRequest request)
     {
+        // Se valida antes de normalizar para no guardar valores que contradigan el modelo del Apéndice A.
         Validate(request.Nombre, request.Descripcion, request.Precio, request.Stock, request.Categoria);
         var name = Normalize(request.Nombre);
         var category = Normalize(request.Categoria);
 
         if (_products.Any(product => SameText(product.Name, name) && SameText(product.Category, category)))
         {
+            // El nombre sólo es único dentro de una categoría, tal como define PRD-003.
             throw new DomainException("PRD-003");
         }
 
@@ -38,6 +40,7 @@ public class ProductService
             CreatedAt = DateTime.UtcNow
         };
 
+        // La fecha se guarda en UTC para que la API no dependa de la zona horaria de quien la ejecute.
         _products.Add(product);
         return ToResponse(product);
     }
@@ -90,6 +93,7 @@ public class ProductService
 
         if (_ordersClient.HasActiveOrders(id))
         {
+            // Un producto referido por una orden en curso no se elimina para preservar la consistencia del historial.
             throw new DomainException("PRD-004");
         }
 
@@ -98,6 +102,7 @@ public class ProductService
 
     private Product FindProduct(Guid id)
     {
+        // Centralizar la búsqueda evita que cada endpoint devuelva un error distinto para el mismo caso.
         return _products.FirstOrDefault(product => product.Id == id) ?? throw new DomainException("PRD-001");
     }
 
