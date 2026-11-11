@@ -3,12 +3,24 @@ using Orders.API.Clients;
 using Orders.API.DTOs;
 using Orders.API.Models;
 using Shared.Contracts.Errors;
+using Shared.Infrastructure.Persistence;
 
 namespace Orders.API.Services;
 
-public class OrderService(IUsersClient usersClient, IProductsClient productsClient)
+public class OrderService
 {
-    private readonly List<Order> _orders = [];
+    private readonly IUsersClient _usersClient;
+    private readonly IProductsClient _productsClient;
+    private readonly IEntityStore<Order> _store;
+    private readonly List<Order> _orders;
+
+    public OrderService(IUsersClient usersClient, IProductsClient productsClient, IEntityStore<Order>? store = null)
+    {
+        _usersClient = usersClient;
+        _productsClient = productsClient;
+        _store = store ?? new InMemoryEntityStore<Order>();
+        _orders = _store.Load().ToList();
+    }
 
     public OrderResponse Create(CreateOrderRequest request)
     {
@@ -18,7 +30,7 @@ public class OrderService(IUsersClient usersClient, IProductsClient productsClie
             throw new DomainException("ORD-002");
         }
 
-        if (!usersClient.Exists(request.UsuarioId))
+        if (!_usersClient.Exists(request.UsuarioId))
         {
             throw new DomainException("ORD-003");
         }
@@ -27,7 +39,7 @@ public class OrderService(IUsersClient usersClient, IProductsClient productsClie
         // Se consolidan productos repetidos antes de consultar stock, para validar la cantidad real pedida.
         foreach (var requestedItem in request.Items.GroupBy(item => item.ProductoId))
         {
-            var product = productsClient.Get(requestedItem.Key) ?? throw new DomainException("ORD-004");
+            var product = _productsClient.Get(requestedItem.Key) ?? throw new DomainException("ORD-004");
             var quantity = requestedItem.Sum(item => item.Cantidad);
             if (product.Stock < quantity)
             {
@@ -48,6 +60,7 @@ public class OrderService(IUsersClient usersClient, IProductsClient productsClie
         };
 
         _orders.Add(order);
+        _store.Save(_orders);
         return ToResponse(order);
     }
 
@@ -80,6 +93,7 @@ public class OrderService(IUsersClient usersClient, IProductsClient productsClie
         }
 
         order.Status = nextStatus;
+        _store.Save(_orders);
         return ToResponse(order);
     }
 

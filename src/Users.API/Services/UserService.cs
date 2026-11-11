@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Identity;
 using System.ComponentModel.DataAnnotations;
 using Shared.Contracts.Errors;
+using Shared.Infrastructure.Persistence;
 using Users.API.DTOs;
 using Users.API.Models;
 
@@ -9,8 +10,16 @@ namespace Users.API.Services;
 
 public class UserService
 {
-    private readonly List<User> _users = [];
+    private readonly List<User> _users;
     private readonly PasswordHasher<User> _hasher = new();
+    private readonly IEntityStore<User> _store;
+
+    public UserService(IEntityStore<User>? store = null)
+    {
+        // El almacén se inyecta en la API y el valor en memoria conserva tests unitarios simples.
+        _store = store ?? new InMemoryEntityStore<User>();
+        _users = _store.Load().ToList();
+    }
 
     public UserResponse Register(RegisterUserRequest request)
     {
@@ -26,6 +35,7 @@ public class UserService
         // Nunca se guarda ni se devuelve la contraseña original: sólo un hash verificable.
         user.PasswordHash = _hasher.HashPassword(user, request.Password);
         _users.Add(user);
+        _store.Save(_users);
         return ToResponse(user);
     }
 
@@ -38,10 +48,12 @@ public class UserService
             // Los intentos son consecutivos; un login correcto los reinicia más abajo.
             user.FailedAttempts++;
             if (user.FailedAttempts >= 3) { user.Active = false; user.BlockReason = BlockReason.FailedAttempts; }
+            _store.Save(_users);
             throw new DomainException(user.Active ? "USR-003" : "USR-004");
         }
         // Un acceso válido demuestra que no corresponde mantener un bloqueo por intentos anteriores.
         user.FailedAttempts = 0;
+        _store.Save(_users);
         return ToResponse(user);
     }
 

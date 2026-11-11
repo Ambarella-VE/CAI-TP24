@@ -3,12 +3,22 @@ using Notifications.API.DTOs;
 using Notifications.API.Clients;
 using Notifications.API.Models;
 using Shared.Contracts.Errors;
+using Shared.Infrastructure.Persistence;
 
 namespace Notifications.API.Services;
 
-public class NotificationService(IUsersClient usersClient)
+public class NotificationService
 {
-    private readonly List<Notification> _notifications = [];
+    private readonly IUsersClient _usersClient;
+    private readonly IEntityStore<Notification> _store;
+    private readonly List<Notification> _notifications;
+
+    public NotificationService(IUsersClient usersClient, IEntityStore<Notification>? store = null)
+    {
+        _usersClient = usersClient;
+        _store = store ?? new InMemoryEntityStore<Notification>();
+        _notifications = _store.Load().ToList();
+    }
 
     public NotificationResponse Send(SendNotificationRequest request)
     {
@@ -23,7 +33,7 @@ public class NotificationService(IUsersClient usersClient)
             throw new DomainException("NTF-002");
         }
 
-        if (!usersClient.Exists(request.UsuarioId))
+        if (!_usersClient.Exists(request.UsuarioId))
         {
             // Notifications no crea usuarios: sólo puede enviar a un destinatario que pertenece a Users.
             throw new DomainException("NTF-001");
@@ -40,6 +50,7 @@ public class NotificationService(IUsersClient usersClient)
 
         // El envío es simulado, pero se persiste su resultado para poder consultar historial por usuario.
         _notifications.Add(notification);
+        _store.Save(_notifications);
         return ToResponse(notification);
     }
 

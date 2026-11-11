@@ -5,6 +5,9 @@ using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Shared.Infrastructure.Errors;
 using Shared.Infrastructure.Correlation;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Configuration;
+using Shared.Infrastructure.Persistence;
+using Microsoft.Data.Sqlite;
 
 namespace Shared.Tests;
 
@@ -93,4 +96,37 @@ public class HealthCheckResponseWriterTests
         Assert.Contains("Healthy", body);
         Assert.StartsWith("application/json", context.Response.ContentType);
     }
+}
+
+public class SqliteEntityStoreTests
+{
+    [Fact]
+    public void Save_y_Load_deben_conservar_los_datos_del_tipo()
+    {
+        var databasePath = Path.Combine(Path.GetTempPath(), $"ecommerce-test-{Guid.NewGuid()}.db");
+        try
+        {
+            var configuration = new ConfigurationBuilder()
+                .AddInMemoryCollection(new Dictionary<string, string?>
+                {
+                    ["ConnectionStrings:DefaultConnection"] = $"Data Source={databasePath}"
+                })
+                .Build();
+            var store = new SqliteEntityStore<PersistedExample>(configuration);
+
+            store.Save([new PersistedExample("dato guardado")]);
+
+            var recovered = store.Load();
+            Assert.Single(recovered);
+            Assert.Equal("dato guardado", recovered.Single().Name);
+        }
+        finally
+        {
+            // SQLite agrupa conexiones para rendimiento; en una prueba liberamos ese pool antes de borrar su archivo temporal.
+            SqliteConnection.ClearAllPools();
+            if (File.Exists(databasePath)) File.Delete(databasePath);
+        }
+    }
+
+    private sealed record PersistedExample(string Name);
 }

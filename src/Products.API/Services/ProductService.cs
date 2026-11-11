@@ -3,15 +3,22 @@ using Products.API.Clients;
 using Products.API.DTOs;
 using Products.API.Models;
 using Shared.Contracts.Errors;
+using Shared.Infrastructure.Persistence;
 
 namespace Products.API.Services;
 
 public class ProductService
 {
-    private readonly List<Product> _products = [];
+    private readonly List<Product> _products;
     private readonly IOrdersClient _ordersClient;
+    private readonly IEntityStore<Product> _store;
 
-    public ProductService(IOrdersClient ordersClient) => _ordersClient = ordersClient;
+    public ProductService(IOrdersClient ordersClient, IEntityStore<Product>? store = null)
+    {
+        _ordersClient = ordersClient;
+        _store = store ?? new InMemoryEntityStore<Product>();
+        _products = _store.Load().ToList();
+    }
 
     public ProductResponse Create(CreateProductRequest request)
     {
@@ -39,6 +46,7 @@ public class ProductService
 
         // La fecha se guarda en UTC para que la API no dependa de la zona horaria de quien la ejecute.
         _products.Add(product);
+        _store.Save(_products);
         return ToResponse(product);
     }
 
@@ -81,6 +89,7 @@ public class ProductService
         product.Price = request.Precio;
         product.Stock = request.Stock;
         product.Category = category;
+        _store.Save(_products);
         return ToResponse(product);
     }
 
@@ -95,6 +104,7 @@ public class ProductService
         }
 
         _products.Remove(product);
+        _store.Save(_products);
     }
 
     private Product FindProduct(Guid id)

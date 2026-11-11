@@ -6,11 +6,14 @@ using Shared.Infrastructure.Errors;
 using Shared.Infrastructure.Health;
 using Shared.Infrastructure.Logging;
 using Users.API.Services;
+using Users.API.Models;
+using Shared.Infrastructure.Persistence;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.AddSharedSerilog();
 
 builder.Services.AddControllers();
+builder.Services.AddSingleton<IEntityStore<User>, SqliteEntityStore<User>>();
 builder.Services.AddSingleton<UserService>();
 builder.Services.AddSwaggerGen(options => { var xmlFile = $"{System.Reflection.Assembly.GetExecutingAssembly().GetName().Name}.xml"; options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFile)); });
 builder.Services.AddExceptionHandler<DomainExceptionHandler>();
