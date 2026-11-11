@@ -2,12 +2,17 @@
 using Microsoft.AspNetCore.Mvc;
 using Products.API.DTOs;
 using Products.API.Services;
+using Shared.Contracts.Errors;
 
 namespace Products.API.Controllers;
 
 /// <summary>Administra el catálogo y el stock de productos del e-commerce.</summary>
 [ApiController]
 [Route("api/products")]
+[ProducesResponseType(typeof(ApiProblemDetails), StatusCodes.Status400BadRequest)]
+[ProducesResponseType(typeof(ApiProblemDetails), StatusCodes.Status404NotFound)]
+[ProducesResponseType(typeof(ApiProblemDetails), StatusCodes.Status409Conflict)]
+[ProducesResponseType(typeof(ApiProblemDetails), StatusCodes.Status500InternalServerError)]
 public class ProductsController : ControllerBase
 {
     private readonly ProductService _service;
@@ -44,6 +49,7 @@ public class ProductsController : ControllerBase
 
         /// <summary>Actualiza los datos editables de un producto existente.</summary>
 [HttpPut("{id:guid}")]
+    [ProducesResponseType(typeof(ProductResponse), StatusCodes.Status200OK)]
     public ActionResult<ProductResponse> Update(Guid id, UpdateProductRequest request)
     {
         return Ok(_service.Update(id, request));
@@ -51,6 +57,7 @@ public class ProductsController : ControllerBase
 
         /// <summary>Elimina un producto si no participa de órdenes activas.</summary>
 [HttpDelete("{id:guid}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
     public IActionResult Delete(Guid id)
     {
         _service.Delete(id);

@@ -2,12 +2,16 @@
 using Microsoft.AspNetCore.Mvc;
 using Notifications.API.DTOs;
 using Notifications.API.Services;
+using Shared.Contracts.Errors;
 
 namespace Notifications.API.Controllers;
 
 /// <summary>Registra y consulta notificaciones simuladas para usuarios existentes.</summary>
 [ApiController]
 [Route("api/notifications")]
+[ProducesResponseType(typeof(ApiProblemDetails), StatusCodes.Status400BadRequest)]
+[ProducesResponseType(typeof(ApiProblemDetails), StatusCodes.Status404NotFound)]
+[ProducesResponseType(typeof(ApiProblemDetails), StatusCodes.Status500InternalServerError)]
 public class NotificationsController(NotificationService notificationService) : ControllerBase
 {
         /// <summary>Simula el envío de Email, Push o SMS y guarda el resultado.</summary>
