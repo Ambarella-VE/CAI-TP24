@@ -1,7 +1,9 @@
 // [TP Microservicios E-Commerce v7] Compone Products.API: registra dependencias, pipeline HTTP, Swagger, errores, logs y health checks.
 using Products.API.Services;
 using Shared.Infrastructure.Correlation;
+
 using Shared.Infrastructure.Errors;
+using Shared.Infrastructure.Health;
 using Shared.Infrastructure.Logging;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -30,8 +32,6 @@ app.UseExceptionHandler();
 app.UseAuthorization();
 
 app.MapControllers();
-app.MapHealthChecks("/health");
-app.MapHealthChecks("/health/live");
-app.MapHealthChecks("/health/ready");
+app.MapSharedHealthChecks();
 
 app.Run();

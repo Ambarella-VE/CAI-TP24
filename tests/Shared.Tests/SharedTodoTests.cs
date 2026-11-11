@@ -1,5 +1,7 @@
 // [TP Microservicios E-Commerce v7] Configura o respalda una parte necesaria de Shared.Tests para cumplir la consigna.
 using Shared.Contracts.Errors;
+using Shared.Infrastructure.Health;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Shared.Infrastructure.Errors;
 using Shared.Infrastructure.Correlation;
 using Microsoft.AspNetCore.Http;
@@ -72,5 +74,23 @@ public class ErrorCatalogTests
 
         Assert.True(context.Response.Headers.ContainsKey("X-Correlation-Id"));
         Assert.False(string.IsNullOrWhiteSpace(context.Response.Headers["X-Correlation-Id"]));
+    }
+}
+
+public class HealthCheckResponseWriterTests
+{
+    [Fact]
+    public async Task Write_debe_devolver_estado_en_JSON()
+    {
+        var context = new DefaultHttpContext();
+        context.Response.Body = new MemoryStream();
+        var report = new HealthReport(new Dictionary<string, HealthReportEntry>(), HealthStatus.Healthy, TimeSpan.Zero);
+
+        await HealthCheckResponseWriter.Write(context, report);
+
+        context.Response.Body.Position = 0;
+        var body = await new StreamReader(context.Response.Body).ReadToEndAsync();
+        Assert.Contains("Healthy", body);
+        Assert.StartsWith("application/json", context.Response.ContentType);
     }
 }

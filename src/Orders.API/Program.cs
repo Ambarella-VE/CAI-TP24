@@ -3,7 +3,9 @@ using Orders.API.Clients;
 using Orders.API.Services;
 using Shared.Contracts.Configuration;
 using Shared.Infrastructure.Correlation;
+
 using Shared.Infrastructure.Errors;
+using Shared.Infrastructure.Health;
 using Shared.Infrastructure.Logging;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -32,8 +34,6 @@ app.UseMiddleware<CorrelationIdMiddleware>();
 app.UseExceptionHandler();
 app.UseAuthorization();
 app.MapControllers();
-app.MapHealthChecks("/health");
-app.MapHealthChecks("/health/live");
-app.MapHealthChecks("/health/ready");
+app.MapSharedHealthChecks();
 
 app.Run();
